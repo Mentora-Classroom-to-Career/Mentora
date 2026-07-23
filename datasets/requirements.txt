@@ -1,0 +1,5 @@
+pandas
+numpy
+spacy
+# after installing spacy, also run:
+#   python3 -m spacy download en_core_web_sm

@@ -1,0 +1,71 @@
+question_id,question_text,subject,topic,subtopic,difficulty,option_a,option_b,option_c,option_d,correct_answer,source
+Q1001,Solve for x: 2x + 6 = 14,Mathematics,Algebra,,easy,3,4,5,8,B,hand_authored_starter
+Q1002,Simplify: 3x + 5x,Mathematics,Algebra,,easy,8x,15x,8x^2,2x,A,hand_authored_starter
+Q1003,Solve x^2 - 5x + 6 = 0. What are the roots?,Mathematics,Algebra,,medium,"x = 2, 3","x = -2, 3","x = 1, 6","x = -1, -6",A,hand_authored_starter
+Q1004,Factorize: x^2 - 9,Mathematics,Algebra,,medium,(x-3)(x+3),(x-9)(x+1),(x-3)^2,(x+9)(x-1),A,hand_authored_starter
+Q1005,"If 2^x = 32, what is the value of x?",Mathematics,Algebra,,hard,4,5,6,16,B,hand_authored_starter
+Q1006,"Solve the system: x + y = 10, x - y = 2. Find x.",Mathematics,Algebra,,medium,4,5,6,8,C,hand_authored_starter
+Q1007,What is the sum of interior angles of a triangle?,Mathematics,Geometry,,easy,90 degrees,180 degrees,270 degrees,360 degrees,B,hand_authored_starter
+Q1008,A square has a side of 5 cm. What is its area?,Mathematics,Geometry,,easy,10 sq cm,20 sq cm,25 sq cm,30 sq cm,C,hand_authored_starter
+Q1009,The circumference of a circle with radius 7 cm is (use pi = 22/7),Mathematics,Geometry,,medium,22 cm,44 cm,14 cm,88 cm,B,hand_authored_starter
+Q1010,"In a right triangle, the two legs are 3 cm and 4 cm. What is the hypotenuse?",Mathematics,Geometry,,medium,5 cm,6 cm,7 cm,12 cm,A,hand_authored_starter
+Q1011,A cylinder has radius 3 cm and height 7 cm. What is its volume (use pi = 22/7)?,Mathematics,Geometry,,hard,154 cu cm,198 cu cm,132 cu cm,231 cu cm,C,hand_authored_starter
+Q1012,What is sin(90 degrees)?,Mathematics,Trigonometry,,easy,0,0.5,1,undefined,C,hand_authored_starter
+Q1013,What is the value of cos(60 degrees)?,Mathematics,Trigonometry,,medium,1,0.5,0.87,0,B,hand_authored_starter
+Q1014,"If tan(theta) = 1, what is theta (0-90 degrees range)?",Mathematics,Trigonometry,,medium,30 degrees,45 degrees,60 degrees,90 degrees,B,hand_authored_starter
+Q1015,Simplify: sin^2(theta) + cos^2(theta),Mathematics,Trigonometry,,hard,0,1,2,tan(theta),B,hand_authored_starter
+Q1016,What is the derivative of x^3?,Mathematics,Calculus,,medium,3x^2,x^2,3x,x^3/3,A,hand_authored_starter
+Q1017,What is the integral of 2x dx?,Mathematics,Calculus,,medium,x^2 + C,2x^2 + C,x^2/2 + C,2 + C,A,hand_authored_starter
+Q1018,What is the derivative of sin(x)?,Mathematics,Calculus,,hard,cos(x),-cos(x),-sin(x),tan(x),A,hand_authored_starter
+Q1019,Evaluate the limit as x approaches 0 of (sin x)/x,Mathematics,Calculus,,hard,0,1,infinity,undefined,B,hand_authored_starter
+Q1020,"What is the mean of 2, 4, 6, 8, 10?",Mathematics,Statistics,,easy,5,6,7,8,B,hand_authored_starter
+Q1021,"What is the median of 3, 7, 9, 15, 20?",Mathematics,Statistics,,medium,7,9,15,10.8,B,hand_authored_starter
+Q1022,What does standard deviation measure?,Mathematics,Statistics,,medium,Central tendency,Data spread,Sample size,Correlation,B,hand_authored_starter
+Q1023,"In a normal distribution, approximately what percent of data falls within 1 standard deviation of the mean?",Mathematics,Statistics,,hard,50 percent,68 percent,95 percent,99 percent,B,hand_authored_starter
+Q1024,Choose the correct verb: She ___ to school every day.,English,Grammar,,easy,go,goes,going,gone,B,hand_authored_starter
+Q1025,Identify the correct sentence.,English,Grammar,,easy,He don't like tea.,He doesn't likes tea.,He doesn't like tea.,He not like tea.,C,hand_authored_starter
+Q1026,Choose the correct passive form: 'They built the house in 1990.',English,Grammar,,medium,The house built in 1990.,The house was built in 1990.,The house is built in 1990.,The house has build in 1990.,B,hand_authored_starter
+Q1027,"Which sentence uses the correct conditional form? 'If it rains, ___'",English,Grammar,,medium,I will stayed home.,I would stay home.,I will stay home.,I stay home.,C,hand_authored_starter
+Q1028,Choose the sentence with correct subject-verb agreement.,English,Grammar,,hard,Neither of the boys were present.,Neither of the boys was present.,Neither of the boys are present.,Neither of the boys be present.,B,hand_authored_starter
+Q1029,"A passage states 'Despite the heavy rain, the match continued.' This implies the match:",English,Reading Comprehension,,medium,was cancelled,was delayed,continued despite bad weather,was moved indoors,C,hand_authored_starter
+Q1030,"In comprehension passages, the 'main idea' usually refers to:",English,Reading Comprehension,,medium,A minor detail,The central point of the passage,The last sentence only,An example used in the text,B,hand_authored_starter
+Q1031,"If a passage uses the word 'however' between two sentences, this signals:",English,Reading Comprehension,,hard,Addition,Contrast,Cause and effect,Summary,B,hand_authored_starter
+Q1032,Identifying an author's tone requires attention to:,English,Reading Comprehension,,hard,Only the topic,Word choice and phrasing,Paragraph length,Number of sentences,B,hand_authored_starter
+Q1033,Choose the synonym of 'Happy'.,English,Vocabulary,,easy,Sad,Joyful,Angry,Tired,B,hand_authored_starter
+Q1034,Choose the antonym of 'Ancient'.,English,Vocabulary,,easy,Old,Modern,Historic,Aged,B,hand_authored_starter
+Q1035,Choose the correct meaning of 'Ambiguous'.,English,Vocabulary,,medium,Very clear,Open to more than one interpretation,Extremely loud,Perfectly accurate,B,hand_authored_starter
+Q1036,Choose the synonym of 'Diligent'.,English,Vocabulary,,medium,Lazy,Hardworking,Careless,Slow,B,hand_authored_starter
+Q1037,Choose the correct meaning of 'Ephemeral'.,English,Vocabulary,,hard,Lasting forever,Short-lived,Very strong,Extremely rare,B,hand_authored_starter
+Q1038,Which of the following is a compound sentence?,English,Writing,,medium,She ran fast.,"She ran fast, and she won the race.","Running fast, she won.",The fast runner.,B,hand_authored_starter
+Q1039,Choose the correctly punctuated sentence.,English,Writing,,medium,I bought apples oranges and bananas.,"I bought apples, oranges, and bananas.","I bought apples oranges, and bananas.","I bought, apples oranges and bananas.",B,hand_authored_starter
+Q1040,Which sentence avoids a dangling modifier?,English,Writing,,hard,"Walking to school, the rain started.","Walking to school, I got caught in the rain.","The rain, walking to school, started.","Walking, the school and rain.",B,hand_authored_starter
+Q1041,What is the SI unit of force?,Physics,Mechanics,,easy,Joule,Newton,Watt,Pascal,B,hand_authored_starter
+Q1042,An object at rest stays at rest unless acted upon by an external force. This is:,Physics,Mechanics,,easy,Newton's First Law,Newton's Second Law,Newton's Third Law,Law of Gravitation,A,hand_authored_starter
+Q1043,A force of 10 N acts on a mass of 2 kg. What is the acceleration?,Physics,Mechanics,,medium,2 m/s^2,5 m/s^2,10 m/s^2,20 m/s^2,B,hand_authored_starter
+Q1044,What is the formula for kinetic energy?,Physics,Mechanics,,medium,mgh,1/2 mv^2,mv,F x d,B,hand_authored_starter
+Q1045,"A ball is thrown upward with initial velocity 20 m/s. Ignoring air resistance, how long does it take to reach maximum height? (g = 10 m/s^2)",Physics,Mechanics,,hard,1 s,2 s,3 s,4 s,B,hand_authored_starter
+Q1046,What is the SI unit of electric current?,Physics,Electricity & Magnetism,,easy,Volt,Ohm,Ampere,Watt,C,hand_authored_starter
+Q1047,"According to Ohm's Law, V = IR. If I = 2A and R = 5 ohms, what is V?",Physics,Electricity & Magnetism,,medium,2.5 V,7 V,10 V,20 V,C,hand_authored_starter
+Q1048,Which particle carries negative charge?,Physics,Electricity & Magnetism,,medium,Proton,Neutron,Electron,Positron,C,hand_authored_starter
+Q1049,Two resistors of 4 ohms and 6 ohms are connected in series. What is the total resistance?,Physics,Electricity & Magnetism,,hard,2.4 ohms,10 ohms,24 ohms,1.5 ohms,B,hand_authored_starter
+Q1050,What type of wave is sound?,Physics,Waves & Optics,,easy,Transverse,Longitudinal,Electromagnetic,Standing,B,hand_authored_starter
+Q1051,The speed of light in vacuum is approximately:,Physics,Waves & Optics,,medium,3 x 10^5 m/s,3 x 10^6 m/s,3 x 10^8 m/s,3 x 10^10 m/s,C,hand_authored_starter
+Q1052,A converging lens is also known as a:,Physics,Waves & Optics,,medium,Concave lens,Convex lens,Plane lens,Diverging lens,B,hand_authored_starter
+Q1053,"If wave frequency is 50 Hz and wavelength is 2 m, what is the wave speed?",Physics,Waves & Optics,,hard,25 m/s,52 m/s,100 m/s,0.04 m/s,C,hand_authored_starter
+Q1054,What particle is emitted in beta decay?,Physics,Modern Physics,,medium,Alpha particle,Electron,Neutron,Photon,B,hand_authored_starter
+Q1055,Einstein's mass-energy equivalence formula is:,Physics,Modern Physics,,medium,E = mc,E = mc^2,E = m/c^2,E = 2mc,B,hand_authored_starter
+Q1056,The photoelectric effect provided evidence for:,Physics,Modern Physics,,hard,Wave nature of light only,Particle nature of light (photons),Sound as a particle,Gravity waves,B,hand_authored_starter
+Q1057,What is the general formula for alkanes?,Chemistry,Organic,,easy,CnH2n,CnH2n+2,CnH2n-2,CnHn,B,hand_authored_starter
+Q1058,Methane's chemical formula is:,Chemistry,Organic,,easy,CH2,CH4,C2H6,CH3,B,hand_authored_starter
+Q1059,Which functional group is present in alcohols?,Chemistry,Organic,,medium,-COOH,-OH,-CHO,-NH2,B,hand_authored_starter
+Q1060,Ethene (C2H4) is an example of which hydrocarbon class?,Chemistry,Organic,,medium,Alkane,Alkene,Alkyne,Aromatic,B,hand_authored_starter
+Q1061,What type of reaction converts an alkene to an alkane?,Chemistry,Organic,,hard,Oxidation,Hydrogenation,Dehydration,Substitution,B,hand_authored_starter
+Q1062,What is the chemical symbol for Sodium?,Chemistry,Inorganic,,easy,So,Sd,Na,S,C,hand_authored_starter
+Q1063,How many electrons does a neutral Oxygen atom (atomic number 8) have?,Chemistry,Inorganic,,easy,6,7,8,9,C,hand_authored_starter
+Q1064,Which group of the periodic table contains the noble gases?,Chemistry,Inorganic,,medium,Group 1,Group 7,Group 17,Group 18,D,hand_authored_starter
+Q1065,What is the charge on a calcium ion (Ca) when it forms an ionic bond?,Chemistry,Inorganic,,medium,+1,+2,-1,-2,B,hand_authored_starter
+Q1066,Which of these is an example of an amphoteric oxide?,Chemistry,Inorganic,,hard,Na2O,Al2O3,CO2,MgO,B,hand_authored_starter
+Q1067,What is the SI unit of temperature used in gas law calculations?,Chemistry,Physical Chemistry,,easy,Celsius,Fahrenheit,Kelvin,Rankine,C,hand_authored_starter
+Q1068,"According to the Ideal Gas Law PV = nRT, if volume and temperature are constant and moles increase, pressure will:",Chemistry,Physical Chemistry,,medium,Decrease,Increase,Stay the same,Become zero,B,hand_authored_starter
+Q1069,What is the pH of a neutral solution at 25 degrees C?,Chemistry,Physical Chemistry,,medium,0,7,14,1,B,hand_authored_starter
+Q1070,"In an exothermic reaction, the enthalpy change (delta H) is:",Chemistry,Physical Chemistry,,hard,Positive,Negative,Zero,Undefined,B,hand_authored_starter

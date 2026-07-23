@@ -1,0 +1,51 @@
+career_id,title,required_skills,description
+1,Data Scientist,"['Python', 'Statistics', 'Machine Learning', 'SQL', 'Data Visualization']",Analyzes complex data to help organizations make decisions using statistical and ML methods.
+2,Machine Learning Engineer,"['Python', 'TensorFlow', 'Deep Learning', 'MLOps', 'Software Engineering']",Builds and deploys machine learning models into production systems.
+3,Data Analyst,"['Excel', 'SQL', 'Data Visualization', 'Statistics', 'Tableau']",Collects and interprets data to answer business questions and build reports.
+4,Business Analyst,"['SQL', 'Excel', 'Requirements Gathering', 'Process Mapping', 'Communication']","Bridges business needs and technical solutions, analyzing processes and requirements."
+5,Software Engineer,"['Programming', 'Data Structures', 'Algorithms', 'System Design', 'Version Control']","Designs, builds, and maintains software applications and systems."
+6,Backend Developer,"['APIs', 'Databases', 'Server Architecture', 'Python', 'Node.js']","Builds server-side logic, databases, and APIs that power applications."
+7,Frontend Developer,"['JavaScript', 'React', 'HTML/CSS', 'UI Design', 'Responsive Design']",Builds user-facing interfaces and interactive web experiences.
+8,Full Stack Developer,"['JavaScript', 'React', 'Node.js', 'Databases', 'APIs']",Works across both frontend and backend layers of web applications.
+9,DevOps Engineer,"['CI/CD', 'Docker', 'Kubernetes', 'Cloud Platforms', 'Scripting']",Automates deployment pipelines and manages infrastructure reliability.
+10,Cloud Engineer,"['AWS', 'Azure', 'Networking', 'Infrastructure as Code', 'Security']",Designs and manages cloud-based infrastructure and services.
+11,Cybersecurity Analyst,"['Network Security', 'Risk Assessment', 'Incident Response', 'Firewalls', 'Penetration Testing']",Protects systems and networks from security threats and breaches.
+12,Database Administrator,"['SQL', 'Database Design', 'Backup and Recovery', 'Performance Tuning', 'Security']","Manages, secures, and optimizes an organization's databases."
+13,Product Manager,"['Strategy', 'User Research', 'Roadmapping', 'Communication', 'Prioritization']",Defines product vision and coordinates teams to build and ship products.
+14,Project Manager,"['Planning', 'Risk Management', 'Communication', 'Scheduling', 'Budgeting']",Plans and oversees projects from initiation through completion.
+15,UX Designer,"['User Research', 'Wireframing', 'Prototyping', 'Usability Testing', 'Figma']","Designs user experiences that are intuitive, accessible, and effective."
+16,UI Designer,"['Visual Design', 'Figma', 'Typography', 'Color Theory', 'Design Systems']",Designs the visual look and feel of digital products.
+17,QA Engineer,"['Test Planning', 'Automation Testing', 'Bug Tracking', 'Selenium', 'Attention to Detail']",Ensures software quality through systematic testing and validation.
+18,Systems Analyst,"['Requirements Analysis', 'Systems Design', 'Documentation', 'SQL', 'Process Improvement']",Analyzes and designs information systems to meet organizational needs.
+19,Network Engineer,"['Networking Protocols', 'Routing and Switching', 'Firewalls', 'Troubleshooting', 'Cisco']",Designs and maintains computer networks and connectivity.
+20,IT Support Specialist,"['Troubleshooting', 'Customer Service', 'Hardware', 'Operating Systems', 'Ticketing Systems']",Provides technical support and resolves IT issues for users.
+21,Data Engineer,"['ETL Pipelines', 'SQL', 'Python', 'Big Data Tools', 'Data Warehousing']",Builds and maintains data pipelines and infrastructure for analytics.
+22,AI Research Scientist,"['Deep Learning', 'Research Methods', 'Python', 'Mathematics', 'Academic Writing']",Conducts research to advance the state of the art in AI/ML.
+23,NLP Engineer,"['Natural Language Processing', 'Python', 'Transformers', 'Linguistics', 'Machine Learning']",Builds systems that understand and generate human language.
+24,Computer Vision Engineer,"['Image Processing', 'Deep Learning', 'OpenCV', 'Python', 'Mathematics']",Builds systems that interpret and analyze visual data.
+25,Mobile App Developer,"['Swift', 'Kotlin', 'Mobile UI Design', 'APIs', 'App Store Deployment']",Builds native or cross-platform mobile applications.
+26,Game Developer,"['Unity', 'C#', '3D Modeling', 'Physics Simulation', 'Game Design']",Designs and builds interactive games and simulations.
+27,Technical Writer,"['Documentation', 'Communication', 'Research', 'Editing', 'Basic Technical Knowledge']",Writes clear technical documentation and user guides.
+28,Solutions Architect,"['System Design', 'Cloud Platforms', 'Enterprise Architecture', 'Communication', 'Technical Leadership']",Designs high-level technical solutions that meet business requirements.
+29,Site Reliability Engineer,"['Monitoring', 'Incident Response', 'Automation', 'Cloud Infrastructure', 'Scripting']","Ensures systems are reliable, scalable, and performant in production."
+30,Business Intelligence Analyst,"['SQL', 'Power BI', 'Data Modeling', 'Dashboards', 'Business Acumen']",Turns raw data into actionable business insights through reporting.
+31,Financial Analyst,"['Financial Modeling', 'Excel', 'Forecasting', 'Accounting Principles', 'Reporting']",Analyzes financial data to guide investment and business decisions.
+32,Marketing Analyst,"['Data Analysis', 'SEO', 'Campaign Analysis', 'Excel', 'Communication']",Analyzes marketing data to optimize campaigns and strategy.
+33,Digital Marketing Specialist,"['SEO', 'Social Media Marketing', 'Content Strategy', 'Analytics', 'Campaign Management']",Plans and executes digital marketing campaigns across channels.
+34,HR Analyst,"['Data Analysis', 'HR Systems', 'Reporting', 'Communication', 'Excel']",Uses data to support HR decisions like hiring and retention.
+35,Operations Analyst,"['Process Improvement', 'Data Analysis', 'Excel', 'Project Coordination', 'Problem Solving']",Analyzes and improves organizational operations and workflows.
+36,Supply Chain Analyst,"['Logistics', 'Forecasting', 'Data Analysis', 'Inventory Management', 'Excel']",Optimizes supply chain processes using data-driven analysis.
+37,Actuary,"['Statistics', 'Probability', 'Risk Assessment', 'Mathematics', 'Financial Modeling']","Assesses financial risk using mathematics and statistics, mainly in insurance."
+38,Statistician,"['Statistics', 'R', 'Data Analysis', 'Research Design', 'Mathematics']","Applies statistical methods to collect, analyze, and interpret data."
+39,Bioinformatics Analyst,"['Biology', 'Python', 'Statistics', 'Genomics Data', 'Data Analysis']",Applies computational methods to biological and genomic data.
+40,Robotics Engineer,"['Control Systems', 'Programming', 'Mechanical Design', 'Sensors', 'Mathematics']",Designs and builds robotic systems and automation.
+41,Embedded Systems Engineer,"['C/C++', 'Microcontrollers', 'Hardware Interfacing', 'RTOS', 'Debugging']",Develops software for embedded hardware devices.
+42,Blockchain Developer,"['Solidity', 'Smart Contracts', 'Cryptography', 'Distributed Systems', 'Web3']",Builds decentralized applications and blockchain-based systems.
+43,Technical Support Engineer,"['Troubleshooting', 'Customer Communication', 'Scripting', 'Documentation', 'Product Knowledge']",Provides technical assistance for software or hardware products.
+44,Sales Engineer,"['Technical Knowledge', 'Communication', 'Product Demos', 'Customer Relationship Management', 'Negotiation']",Combines technical expertise with sales to support customer solutions.
+45,Management Consultant,"['Problem Solving', 'Communication', 'Data Analysis', 'Strategy', 'Presentation Skills']",Advises organizations on improving performance and solving business problems.
+46,Research Assistant,"['Research Methods', 'Data Collection', 'Literature Review', 'Academic Writing', 'Analysis']",Supports academic or industry research projects.
+47,Teacher / Tutor,"['Subject Expertise', 'Communication', 'Lesson Planning', 'Patience', 'Assessment Design']",Educates students in academic subjects at various levels.
+48,Content Strategist,"['Content Planning', 'SEO', 'Writing', 'Analytics', 'Editorial Judgment']",Plans and oversees content creation aligned with business goals.
+49,Graphic Designer,"['Adobe Creative Suite', 'Typography', 'Visual Composition', 'Branding', 'Creativity']","Creates visual content for branding, marketing, and communication."
+50,Compliance Officer,"['Regulatory Knowledge', 'Risk Assessment', 'Attention to Detail', 'Reporting', 'Communication']","Ensures an organization follows laws, regulations, and internal policies."

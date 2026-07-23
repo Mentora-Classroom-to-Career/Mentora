@@ -1,0 +1,101 @@
+required_skills,job_title,label
+"['Statistics', 'R', 'Data Analysis', 'Research Design', 'Mathematics']",Statistician,1.0
+"['Documentation', 'Communication', 'Research', 'Editing', 'Basic Technical Knowledge']",Technical Writer,1.0
+"['Monitoring', 'Incident Response', 'Automation', 'Cloud Infrastructure', 'Scripting']",Research Assistant,0.0
+"['Solidity', 'Smart Contracts', 'Cryptography', 'Distributed Systems', 'Web3']",UX Designer,0.0
+"['Regulatory Knowledge', 'Risk Assessment', 'Attention to Detail', 'Reporting', 'Communication']",Compliance Officer,1.0
+"['Visual Design', 'Figma', 'Typography', 'Color Theory', 'Design Systems']",UI Designer,1.0
+"['Technical Knowledge', 'Communication', 'Product Demos', 'Customer Relationship Management', 'Negotiation']",Robotics Engineer,0.0
+"['Deep Learning', 'Research Methods', 'Python', 'Mathematics', 'Academic Writing']",QA Engineer,0.0
+"['Statistics', 'Probability', 'Risk Assessment', 'Mathematics', 'Financial Modeling']",Sales Engineer,0.0
+"['Natural Language Processing', 'Python', 'Transformers', 'Linguistics', 'Machine Learning']",NLP Engineer,1.0
+"['Planning', 'Risk Management', 'Communication', 'Scheduling', 'Budgeting']",Project Manager,1.0
+"['C/C++', 'Microcontrollers', 'Hardware Interfacing', 'RTOS', 'Debugging']",Embedded Systems Engineer,1.0
+"['Excel', 'SQL', 'Data Visualization', 'Statistics', 'Tableau']",NLP Engineer,0.0
+"['Strategy', 'User Research', 'Roadmapping', 'Communication', 'Prioritization']",Product Manager,1.0
+"['Biology', 'Python', 'Statistics', 'Genomics Data', 'Data Analysis']",Compliance Officer,0.0
+"['Research Methods', 'Data Collection', 'Literature Review', 'Academic Writing', 'Analysis']",Research Assistant,1.0
+"['SQL', 'Database Design', 'Backup and Recovery', 'Performance Tuning', 'Security']",Database Administrator,1.0
+"['Test Planning', 'Automation Testing', 'Bug Tracking', 'Selenium', 'Attention to Detail']",Business Intelligence Analyst,0.0
+"['ETL Pipelines', 'SQL', 'Python', 'Big Data Tools', 'Data Warehousing']",Data Engineer,1.0
+"['Networking Protocols', 'Routing and Switching', 'Firewalls', 'Troubleshooting', 'Cisco']",Network Engineer,1.0
+"['Python', 'Statistics', 'Machine Learning', 'SQL', 'Data Visualization']",Project Manager,0.0
+"['Excel', 'SQL', 'Data Visualization', 'Statistics', 'Tableau']",Data Analyst,1.0
+"['Requirements Analysis', 'Systems Design', 'Documentation', 'SQL', 'Process Improvement']",Systems Analyst,1.0
+"['Logistics', 'Forecasting', 'Data Analysis', 'Inventory Management', 'Excel']",Graphic Designer,0.0
+"['APIs', 'Databases', 'Server Architecture', 'Python', 'Node.js']",Backend Developer,1.0
+"['Content Planning', 'SEO', 'Writing', 'Analytics', 'Editorial Judgment']",Game Developer,0.0
+"['Python', 'TensorFlow', 'Deep Learning', 'MLOps', 'Software Engineering']",UI Designer,0.0
+"['Financial Modeling', 'Excel', 'Forecasting', 'Accounting Principles', 'Reporting']",Financial Analyst,1.0
+"['Swift', 'Kotlin', 'Mobile UI Design', 'APIs', 'App Store Deployment']",Bioinformatics Analyst,0.0
+"['Subject Expertise', 'Communication', 'Lesson Planning', 'Patience', 'Assessment Design']",Business Analyst,0.0
+"['Visual Design', 'Figma', 'Typography', 'Color Theory', 'Design Systems']",Supply Chain Analyst,0.0
+"['Programming', 'Data Structures', 'Algorithms', 'System Design', 'Version Control']",Financial Analyst,0.0
+"['System Design', 'Cloud Platforms', 'Enterprise Architecture', 'Communication', 'Technical Leadership']",Solutions Architect,1.0
+"['CI/CD', 'Docker', 'Kubernetes', 'Cloud Platforms', 'Scripting']",Cybersecurity Analyst,0.0
+"['Data Analysis', 'HR Systems', 'Reporting', 'Communication', 'Excel']",HR Analyst,1.0
+"['Technical Knowledge', 'Communication', 'Product Demos', 'Customer Relationship Management', 'Negotiation']",Sales Engineer,1.0
+"['Statistics', 'Probability', 'Risk Assessment', 'Mathematics', 'Financial Modeling']",Actuary,1.0
+"['Deep Learning', 'Research Methods', 'Python', 'Mathematics', 'Academic Writing']",AI Research Scientist,1.0
+"['SEO', 'Social Media Marketing', 'Content Strategy', 'Analytics', 'Campaign Management']",Digital Marketing Specialist,1.0
+"['ETL Pipelines', 'SQL', 'Python', 'Big Data Tools', 'Data Warehousing']",HR Analyst,0.0
+"['Strategy', 'User Research', 'Roadmapping', 'Communication', 'Prioritization']",Operations Analyst,0.0
+"['Regulatory Knowledge', 'Risk Assessment', 'Attention to Detail', 'Reporting', 'Communication']",Content Strategist,0.0
+"['Image Processing', 'Deep Learning', 'OpenCV', 'Python', 'Mathematics']",Marketing Analyst,0.0
+"['AWS', 'Azure', 'Networking', 'Infrastructure as Code', 'Security']",Actuary,0.0
+"['Solidity', 'Smart Contracts', 'Cryptography', 'Distributed Systems', 'Web3']",Blockchain Developer,1.0
+"['Network Security', 'Risk Assessment', 'Incident Response', 'Firewalls', 'Penetration Testing']",Cybersecurity Analyst,1.0
+"['Documentation', 'Communication', 'Research', 'Editing', 'Basic Technical Knowledge']",Backend Developer,0.0
+"['Research Methods', 'Data Collection', 'Literature Review', 'Academic Writing', 'Analysis']",IT Support Specialist,0.0
+"['Monitoring', 'Incident Response', 'Automation', 'Cloud Infrastructure', 'Scripting']",Site Reliability Engineer,1.0
+"['Financial Modeling', 'Excel', 'Forecasting', 'Accounting Principles', 'Reporting']",Statistician,0.0
+"['SQL', 'Power BI', 'Data Modeling', 'Dashboards', 'Business Acumen']",Business Intelligence Analyst,1.0
+"['Data Analysis', 'SEO', 'Campaign Analysis', 'Excel', 'Communication']",Marketing Analyst,1.0
+"['Test Planning', 'Automation Testing', 'Bug Tracking', 'Selenium', 'Attention to Detail']",QA Engineer,1.0
+"['Data Analysis', 'SEO', 'Campaign Analysis', 'Excel', 'Communication']",Embedded Systems Engineer,0.0
+"['Python', 'TensorFlow', 'Deep Learning', 'MLOps', 'Software Engineering']",Machine Learning Engineer,1.0
+"['Process Improvement', 'Data Analysis', 'Excel', 'Project Coordination', 'Problem Solving']",Full Stack Developer,0.0
+"['System Design', 'Cloud Platforms', 'Enterprise Architecture', 'Communication', 'Technical Leadership']",Product Manager,0.0
+"['Statistics', 'R', 'Data Analysis', 'Research Design', 'Mathematics']",Technical Writer,0.0
+"['SQL', 'Excel', 'Requirements Gathering', 'Process Mapping', 'Communication']",Business Analyst,1.0
+"['Logistics', 'Forecasting', 'Data Analysis', 'Inventory Management', 'Excel']",Supply Chain Analyst,1.0
+"['C/C++', 'Microcontrollers', 'Hardware Interfacing', 'RTOS', 'Debugging']",Management Consultant,0.0
+"['AWS', 'Azure', 'Networking', 'Infrastructure as Code', 'Security']",Cloud Engineer,1.0
+"['Subject Expertise', 'Communication', 'Lesson Planning', 'Patience', 'Assessment Design']",Teacher / Tutor,1.0
+"['Programming', 'Data Structures', 'Algorithms', 'System Design', 'Version Control']",Software Engineer,1.0
+"['Biology', 'Python', 'Statistics', 'Genomics Data', 'Data Analysis']",Bioinformatics Analyst,1.0
+"['Control Systems', 'Programming', 'Mechanical Design', 'Sensors', 'Mathematics']",DevOps Engineer,0.0
+"['Process Improvement', 'Data Analysis', 'Excel', 'Project Coordination', 'Problem Solving']",Operations Analyst,1.0
+"['User Research', 'Wireframing', 'Prototyping', 'Usability Testing', 'Figma']",Systems Analyst,0.0
+"['SQL', 'Database Design', 'Backup and Recovery', 'Performance Tuning', 'Security']",Teacher / Tutor,0.0
+"['SQL', 'Excel', 'Requirements Gathering', 'Process Mapping', 'Communication']",Technical Support Engineer,0.0
+"['SQL', 'Power BI', 'Data Modeling', 'Dashboards', 'Business Acumen']",Frontend Developer,0.0
+"['Swift', 'Kotlin', 'Mobile UI Design', 'APIs', 'App Store Deployment']",Mobile App Developer,1.0
+"['JavaScript', 'React', 'HTML/CSS', 'UI Design', 'Responsive Design']",Machine Learning Engineer,0.0
+"['Troubleshooting', 'Customer Service', 'Hardware', 'Operating Systems', 'Ticketing Systems']",Data Analyst,0.0
+"['Planning', 'Risk Management', 'Communication', 'Scheduling', 'Budgeting']",Network Engineer,0.0
+"['SEO', 'Social Media Marketing', 'Content Strategy', 'Analytics', 'Campaign Management']",Database Administrator,0.0
+"['Network Security', 'Risk Assessment', 'Incident Response', 'Firewalls', 'Penetration Testing']",Digital Marketing Specialist,0.0
+"['Troubleshooting', 'Customer Service', 'Hardware', 'Operating Systems', 'Ticketing Systems']",IT Support Specialist,1.0
+"['JavaScript', 'React', 'HTML/CSS', 'UI Design', 'Responsive Design']",Frontend Developer,1.0
+"['APIs', 'Databases', 'Server Architecture', 'Python', 'Node.js']",Solutions Architect,0.0
+"['Unity', 'C#', '3D Modeling', 'Physics Simulation', 'Game Design']",Mobile App Developer,0.0
+"['Python', 'Statistics', 'Machine Learning', 'SQL', 'Data Visualization']",Data Scientist,1.0
+"['Problem Solving', 'Communication', 'Data Analysis', 'Strategy', 'Presentation Skills']",Management Consultant,1.0
+"['JavaScript', 'React', 'Node.js', 'Databases', 'APIs']",Full Stack Developer,1.0
+"['Adobe Creative Suite', 'Typography', 'Visual Composition', 'Branding', 'Creativity']",Graphic Designer,1.0
+"['Adobe Creative Suite', 'Typography', 'Visual Composition', 'Branding', 'Creativity']",Software Engineer,0.0
+"['Control Systems', 'Programming', 'Mechanical Design', 'Sensors', 'Mathematics']",Robotics Engineer,1.0
+"['CI/CD', 'Docker', 'Kubernetes', 'Cloud Platforms', 'Scripting']",DevOps Engineer,1.0
+"['Troubleshooting', 'Customer Communication', 'Scripting', 'Documentation', 'Product Knowledge']",Technical Support Engineer,1.0
+"['Natural Language Processing', 'Python', 'Transformers', 'Linguistics', 'Machine Learning']",AI Research Scientist,0.0
+"['Problem Solving', 'Communication', 'Data Analysis', 'Strategy', 'Presentation Skills']",Computer Vision Engineer,0.0
+"['User Research', 'Wireframing', 'Prototyping', 'Usability Testing', 'Figma']",UX Designer,1.0
+"['JavaScript', 'React', 'Node.js', 'Databases', 'APIs']",Data Engineer,0.0
+"['Troubleshooting', 'Customer Communication', 'Scripting', 'Documentation', 'Product Knowledge']",Site Reliability Engineer,0.0
+"['Image Processing', 'Deep Learning', 'OpenCV', 'Python', 'Mathematics']",Computer Vision Engineer,1.0
+"['Data Analysis', 'HR Systems', 'Reporting', 'Communication', 'Excel']",Data Scientist,0.0
+"['Requirements Analysis', 'Systems Design', 'Documentation', 'SQL', 'Process Improvement']",Blockchain Developer,0.0
+"['Unity', 'C#', '3D Modeling', 'Physics Simulation', 'Game Design']",Game Developer,1.0
+"['Networking Protocols', 'Routing and Switching', 'Firewalls', 'Troubleshooting', 'Cisco']",Cloud Engineer,0.0
+"['Content Planning', 'SEO', 'Writing', 'Analytics', 'Editorial Judgment']",Content Strategist,1.0
