@@ -1,3 +1,9 @@
+---
+noteId: "4fca6c4086d811f18cf0e7d5b31b454b"
+tags: []
+
+---
+
 # M3 smoke test
 
 `run_m3.py` — the train_m3.ipynb training loop extracted to a standalone
