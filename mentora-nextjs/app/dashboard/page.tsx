@@ -1,10 +1,66 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import DashboardSettings, { EditProfileButton } from "@/components/DashboardSettings";
+import { apiFetchServer, COOKIE_NAME } from "@/lib/api";
+import type {
+  DashboardStats, ScoreTrendPoint, WeeklySnapshotDay, WeakTopic, NotificationItem, UserPublic,
+} from "@/lib/types";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
-export default function DashboardPage() {
+function scoreTrendToPolyline(points: ScoreTrendPoint[]): { line: string; fill: string } {
+  if (points.length === 0) return { line: "", fill: "" };
+  const width = 560;
+  const height = 160;
+  const pad = 10;
+  const max = Math.max(...points.map((p) => p.score), 100);
+  const min = Math.min(...points.map((p) => p.score), 0);
+  const range = Math.max(max - min, 1);
+  const step = (width - pad * 2) / Math.max(points.length - 1, 1);
+
+  const coords = points.map((p, i) => {
+    const x = pad + i * step;
+    const y = height - pad - ((p.score - min) / range) * (height - pad * 2);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+
+  const line = coords.join(" ");
+  const fill = `${line} ${coords[coords.length - 1].split(",")[0]},${height} ${coords[0].split(",")[0]},${height}`;
+  return { line, fill };
+}
+
+function statusColor(status: WeeklySnapshotDay["status"]) {
+  switch (status) {
+    case "done": return { bg: "var(--mint-card)", text: "var(--green-700)", label: "Done ✓" };
+    case "today": return { bg: "var(--green-100)", text: "var(--green-700)", label: "Today" };
+    case "missed": return { bg: "var(--red-100)", text: "var(--red-600)", label: "Missed" };
+    default: return { bg: "var(--green-50)", text: "var(--ink-500)", label: "Pending" };
+  }
+}
+
+function weakTopicBarClass(score: number) {
+  if (score < 50) return "low";
+  if (score < 70) return "warn";
+  return "";
+}
+
+export default async function DashboardPage() {
+  const token = cookies().get(COOKIE_NAME)?.value;
+
+  const [user, stats, trend, snapshot, weakTopics, notifications] = await Promise.all([
+    apiFetchServer<UserPublic>("/users/me", token),
+    apiFetchServer<DashboardStats>("/dashboard/stats", token),
+    apiFetchServer<{ points: ScoreTrendPoint[] }>("/dashboard/score-trend", token),
+    apiFetchServer<{ days: WeeklySnapshotDay[] }>("/dashboard/weekly-snapshot", token),
+    apiFetchServer<{ topics: WeakTopic[] }>("/dashboard/weak-topics", token),
+    apiFetchServer<{ items: NotificationItem[] }>("/notifications", token),
+  ]);
+
+  const { line, fill } = scoreTrendToPolyline(trend.points);
+  const initials = `${user.first_name[0] ?? ""}${user.last_name[0] ?? ""}`.toUpperCase();
+
   return (
     <>
       <SiteHeader variant="app" />
@@ -12,16 +68,16 @@ export default function DashboardPage() {
       <section className="page-heading">
         <div className="container">
           <div className="profile-row">
-            <div className="avatar-circle">RR</div>
+            <div className="avatar-circle">{initials}</div>
             <div>
-              <h1 style={{ marginBottom: 2 }}>Raimal Raja</h1>
-              <p className="mb-0">BS Computer Science · University of Sindh, Laar Campus · Batch 2023</p>
+              <h1 style={{ marginBottom: 2 }}>{user.first_name} {user.last_name}</h1>
+              <p className="mb-0">{user.university ?? "—"}</p>
               <p className="small-muted" style={{ margin: "2px 0 0" }}>
-                Preparing for: Sindh University Entry Test · 47 days left
+                Preparing for: {user.exam_goal ?? "—"}
               </p>
             </div>
           </div>
-          <button className="btn btn-primary">Edit Profile</button>
+          <EditProfileButton user={user} />
         </div>
       </section>
 
@@ -30,117 +86,56 @@ export default function DashboardPage() {
           <div className="stat-strip" style={{ marginBottom: 28 }}>
             <div className="stat-cell">
               <div className="stat-label">Exam Sessions</div>
-              <div className="stat-num">24</div>
-              <div className="stat-sub" style={{ color: "var(--ink-500)" }}>
-                Total practice sessions
-              </div>
+              <div className="stat-num">{stats.exam_sessions}</div>
+              <div className="stat-sub" style={{ color: "var(--ink-500)" }}>Total practice sessions</div>
             </div>
             <div className="stat-cell">
               <div className="stat-label">Avg. Score</div>
-              <div className="stat-num">72%</div>
-              <div className="stat-sub">+5% from last week</div>
+              <div className="stat-num">{stats.avg_score}%</div>
+              <div className="stat-sub">+{stats.avg_score_delta}% from last week</div>
             </div>
             <div className="stat-cell">
               <div className="stat-label">Videos Watched</div>
-              <div className="stat-num">38</div>
-              <div className="stat-sub" style={{ color: "var(--ink-500)" }}>
-                14 this week
-              </div>
+              <div className="stat-num">{stats.videos_watched}</div>
+              <div className="stat-sub" style={{ color: "var(--ink-500)" }}>{stats.videos_watched_this_week} this week</div>
             </div>
             <div className="stat-cell">
               <div className="stat-label">Career Match (top)</div>
-              <div className="stat-num" style={{ fontSize: "1.2rem" }}>
-                Data Scientist
-              </div>
-              <div className="stat-sub">88% fit</div>
+              <div className="stat-num" style={{ fontSize: "1.2rem" }}>{stats.top_career_match.title}</div>
+              <div className="stat-sub">{stats.top_career_match.fit_percent}% fit</div>
             </div>
           </div>
 
           <div className="grid-2" style={{ gridTemplateColumns: "2fr 1fr", alignItems: "start" }}>
             <div>
               <div className="panel" style={{ marginBottom: 20 }}>
-                <h4 style={{ margin: "0 0 16px" }}>Score trend (last 10 sessions)</h4>
+                <h4 style={{ margin: "0 0 16px" }}>Score trend (last {trend.points.length} sessions)</h4>
                 <div className="chart-wrap">
                   <svg viewBox="0 0 560 160" width="100%" height="160" preserveAspectRatio="none">
-                    <polyline
-                      points="10,120 65,110 120,95 175,100 230,80 285,85 340,60 395,65 450,45 505,40"
-                      fill="none"
-                      stroke="#1a5c42"
-                      strokeWidth={3}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <polyline
-                      points="10,120 65,110 120,95 175,100 230,80 285,85 340,60 395,65 450,45 505,40 505,160 10,160"
-                      fill="#eef8f2"
-                      stroke="none"
-                      opacity={0.7}
-                    />
+                    <polyline points={line} fill="none" stroke="#1a5c42" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
+                    <polyline points={fill} fill="#eef8f2" stroke="none" opacity={0.7} />
                   </svg>
                 </div>
                 <div className="chart-axis-labels">
-                  <span>S1</span>
-                  <span>S2</span>
-                  <span>S3</span>
-                  <span>S4</span>
-                  <span>S5</span>
-                  <span>S6</span>
-                  <span>S7</span>
-                  <span>S8</span>
-                  <span>S9</span>
-                  <span>S10</span>
+                  {trend.points.map((p) => <span key={p.session}>{p.session}</span>)}
                 </div>
               </div>
 
               <div className="panel">
                 <h4 style={{ margin: "0 0 14px" }}>This week&apos;s timetable snapshot</h4>
                 <div className="snapshot-grid">
-                  <div className="snapshot-day" style={{ background: "var(--mint-card)" }}>
-                    <div className="day-name">Mon</div>
-                    <div style={{ color: "var(--green-700)" }}>
-                      Done ✓
-                      <br />
-                      Algebra
-                    </div>
-                  </div>
-                  <div className="snapshot-day" style={{ background: "var(--mint-card)" }}>
-                    <div className="day-name">Tue</div>
-                    <div style={{ color: "var(--green-700)" }}>
-                      Done ✓
-                      <br />
-                      English
-                    </div>
-                  </div>
-                  <div
-                    className="snapshot-day"
-                    style={{ background: "var(--green-100)", border: "2px solid var(--green-700)" }}
-                  >
-                    <div className="day-name">Wed</div>
-                    <div style={{ color: "var(--green-700)" }}>
-                      Today
-                      <br />
-                      Grammar
-                    </div>
-                  </div>
-                  <div className="snapshot-day" style={{ background: "var(--red-100)" }}>
-                    <div className="day-name">Thu</div>
-                    <div style={{ color: "var(--red-600)" }}>
-                      Missed
-                      <br />
-                      Geometry
-                    </div>
-                  </div>
-                  <div className="snapshot-day" style={{ background: "var(--green-50)" }}>
-                    <div className="day-name">Fri</div>
-                    <div style={{ color: "var(--ink-500)" }}>
-                      Pending
-                      <br />
-                      Revision
-                    </div>
-                  </div>
+                  {snapshot.days.map((d) => {
+                    const c = statusColor(d.status);
+                    return (
+                      <div key={d.day} className="snapshot-day" style={{ background: c.bg }}>
+                        <div className="day-name">{d.day}</div>
+                        <div style={{ color: c.text }}>{c.label}<br />{d.topic}</div>
+                      </div>
+                    );
+                  })}
                 </div>
                 <p className="small-muted" style={{ margin: "14px 0 0" }}>
-                  ● Completion rate this week: 2/5 sessions
+                  ● Completion rate this week: {snapshot.days.filter((d) => d.status === "done").length}/{snapshot.days.length} sessions
                 </p>
               </div>
             </div>
@@ -149,59 +144,26 @@ export default function DashboardPage() {
               <h4 style={{ margin: "0 0 12px", display: "flex", alignItems: "center", gap: 6 }}>
                 ⚠ Weak Topics (AI flagged)
               </h4>
-              <div className="weak-item">
-                <h4>Algebra — Quadratic Equations</h4>
-                <div className="score-line">Score: 38% · Needs urgent review</div>
-                <span className="progress-track">
-                  <span className="progress-fill low" style={{ width: "38%" }} />
-                </span>
-              </div>
-              <div className="weak-item">
-                <h4>Grammar — Tenses</h4>
-                <div className="score-line">Score: 44%</div>
-                <span className="progress-track">
-                  <span className="progress-fill low" style={{ width: "44%" }} />
-                </span>
-              </div>
-              <div className="weak-item">
-                <h4>Geometry — Circles</h4>
-                <div className="score-line">Score: 60% · Medium</div>
-                <span className="progress-track">
-                  <span className="progress-fill warn" style={{ width: "60%" }} />
-                </span>
-              </div>
-              <div className="weak-item">
-                <h4>Reading Comprehension</h4>
-                <div className="score-line">Score: 62% · Improving</div>
-                <span className="progress-track">
-                  <span className="progress-fill" style={{ width: "62%" }} />
-                </span>
-              </div>
+              {weakTopics.topics.map((t) => (
+                <div className="weak-item" key={`${t.subject}-${t.topic}`}>
+                  <h4>{t.subject} — {t.topic}</h4>
+                  <div className="score-line">Score: {t.score}%{t.note ? ` · ${t.note}` : ""}</div>
+                  <span className="progress-track">
+                    <span className={`progress-fill ${weakTopicBarClass(t.score)}`} style={{ width: `${t.score}%` }} />
+                  </span>
+                </div>
+              ))}
 
               <h4 style={{ margin: "24px 0 12px", display: "flex", alignItems: "center", gap: 6 }}>
                 🔔 Notifications
               </h4>
-              <div className="notif-item alert">
-                ⚠ Score trend flagged &quot;at risk&quot; in Algebra — Trajectory Predictor
-              </div>
-              <div className="notif-item ok">✅ New topic playlist ready for Algebra</div>
-              <div className="notif-item time">🕒 Tomorrow: Grammar session — 7 PM</div>
-              <div className="notif-item match">🎯 Career match updated: +2 points</div>
+              {notifications.items.map((n) => (
+                <div className={`notif-item${n.is_read ? "" : " alert"}`} key={n.id}>{n.message}</div>
+              ))}
             </div>
           </div>
 
-          <div id="settings" style={{ marginTop: 36 }}>
-            <h4 style={{ margin: "0 0 14px" }}>Settings</h4>
-            <div className="settings-grid">
-              <button className="btn btn-outline btn-sm">👤 Account</button>
-              <button className="btn btn-outline btn-sm">🔔 Notification Prefs</button>
-              <button className="btn btn-outline btn-sm">📊 Study Preferences</button>
-              <button className="btn btn-outline btn-sm">🔒 Change Password</button>
-              <button className="btn btn-sm" style={{ background: "var(--red-100)", color: "var(--red-600)" }}>
-                🗑 Delete Account
-              </button>
-            </div>
-          </div>
+          <DashboardSettings user={user} />
         </div>
       </section>
 

@@ -15,6 +15,7 @@ downloads/
 eggs/
 .eggs/
 lib/
+!mentora-nextjs/lib/
 lib64/
 parts/
 sdist/

@@ -1,11 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import { apiFetchServer, COOKIE_NAME } from "@/lib/api";
+import type { LearningStats, PlaylistVideo, Assignment, Material } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Learning Portal" };
 
-export default function LearningPortalPage() {
+export default async function LearningPortalPage() {
+  const token = cookies().get(COOKIE_NAME)?.value;
+
+  const [stats, playlistData, assignmentsData, materialsData] = await Promise.all([
+    apiFetchServer<LearningStats>("/learning/stats", token),
+    apiFetchServer<{ videos: PlaylistVideo[] }>("/learning/playlist", token),
+    apiFetchServer<{ assignments: Assignment[] }>("/learning/assignments", token),
+    apiFetchServer<{ materials: Material[] }>("/learning/materials", token),
+  ]);
+
   return (
     <>
       <SiteHeader variant="app" />
@@ -25,61 +37,41 @@ export default function LearningPortalPage() {
           <div className="stat-strip mt-24" style={{ marginBottom: 28 }}>
             <div className="stat-cell">
               <div className="stat-label">Videos in Playlist</div>
-              <div className="stat-num">38</div>
-              <div className="stat-sub">14 watched this week</div>
+              <div className="stat-num">{stats.videos_in_playlist}</div>
+              <div className="stat-sub">{stats.videos_watched_this_week} watched this week</div>
             </div>
             <div className="stat-cell">
               <div className="stat-label">MCQ Assignments</div>
-              <div className="stat-num">12</div>
-              <div className="stat-sub">3 pending today</div>
+              <div className="stat-num">{stats.mcq_assignments}</div>
+              <div className="stat-sub">{stats.mcq_pending_today} pending today</div>
             </div>
             <div className="stat-cell">
               <div className="stat-label">Course PDFs</div>
-              <div className="stat-num">7</div>
-              <div className="stat-sub">2 downloaded</div>
+              <div className="stat-num">{stats.course_pdfs}</div>
+              <div className="stat-sub">{stats.course_pdfs_downloaded} downloaded</div>
             </div>
             <div className="stat-cell">
               <div className="stat-label">Avg. MCQ Score</div>
-              <div className="stat-num">72%</div>
-              <div className="stat-sub">+5% this week</div>
+              <div className="stat-num">{stats.avg_mcq_score}%</div>
+              <div className="stat-sub">+{stats.avg_mcq_score_delta}% this week</div>
             </div>
           </div>
 
           <div className="layout-sidebar">
             <aside className="side-nav-block">
               <div className="group-label">My Content</div>
-              <a href="#" className="side-link active">
-                My Playlists <span className="count-badge">38</span>
-              </a>
-              <a href="#" className="side-link">
-                MCQ Assignments <span className="count-badge">3</span>
-              </a>
-              <a href="#" className="side-link">
-                Course PDFs
-              </a>
-              <a href="#" className="side-link">
-                Watch History
-              </a>
+              <a href="#" className="side-link active">My Playlists <span className="count-badge">{stats.videos_in_playlist}</span></a>
+              <a href="#" className="side-link">MCQ Assignments <span className="count-badge">{stats.mcq_pending_today}</span></a>
+              <a href="#" className="side-link">Course PDFs</a>
+              <a href="#" className="side-link">Watch History</a>
               <div className="group-label">Filter by Subject</div>
-              <a href="#" className="side-link">
-                Mathematics
-              </a>
-              <a href="#" className="side-link">
-                English
-              </a>
-              <a href="#" className="side-link">
-                Physics
-              </a>
-              <a href="#" className="side-link">
-                Chemistry
-              </a>
+              <a href="#" className="side-link">Mathematics</a>
+              <a href="#" className="side-link">English</a>
+              <a href="#" className="side-link">Physics</a>
+              <a href="#" className="side-link">Chemistry</a>
               <div className="group-label">Tools</div>
-              <a href="#" className="side-link">
-                AI Topic Explainer
-              </a>
-              <a href="#" className="side-link">
-                Download All
-              </a>
+              <a href="#" className="side-link">AI Topic Explainer</a>
+              <a href="#" className="side-link">Download All</a>
             </aside>
 
             <div>
@@ -88,98 +80,52 @@ export default function LearningPortalPage() {
                 <button className="btn btn-primary btn-sm">Add Video</button>
               </div>
 
-              <div className="media-row">
-                <div className="media-thumb" />
-                <div className="media-info">
-                  <h4>Quadratic Equations — Full Chapter</h4>
-                  <span className="tag-subject">Mathematics</span>
-                  <div className="meta">MathCity.org · 18 min · AI-added from today&apos;s session</div>
+              {playlistData.videos.map((v) => (
+                <div className="media-row" key={v.id}>
+                  <div className="media-thumb" />
+                  <div className="media-info">
+                    <h4>{v.title}</h4>
+                    <span className="tag-subject">{v.subject}</span>
+                    <div className="meta">{v.source} · {v.duration_min} min · {v.watched ? "Watched" : "Not watched yet"}</div>
+                  </div>
+                  <div className="media-actions">
+                    <button className="btn btn-primary btn-sm">Watch</button>
+                    <button className="btn btn-outline btn-sm">Remove</button>
+                  </div>
                 </div>
-                <div className="media-actions">
-                  <button className="btn btn-primary btn-sm">Watch</button>
-                  <button className="btn btn-outline btn-sm">Remove</button>
-                </div>
-              </div>
-
-              <div className="media-row">
-                <div className="media-thumb" />
-                <div className="media-info">
-                  <h4>Grammar Tenses — Active &amp; Passive Voice</h4>
-                  <span className="tag-subject">English</span>
-                  <div className="meta">Khan Academy · 12 min · AI-added</div>
-                </div>
-                <div className="media-actions">
-                  <button className="btn btn-primary btn-sm">Watch</button>
-                  <button className="btn btn-outline btn-sm">Remove</button>
-                </div>
-              </div>
-
-              <div className="media-row">
-                <div className="media-thumb" />
-                <div className="media-info">
-                  <h4>Geometry — Circles &amp; Angles Full Revision</h4>
-                  <span className="tag-subject">Mathematics</span>
-                  <div className="meta">MathCity.org · 24 min · AI-added</div>
-                </div>
-                <div className="media-actions">
-                  <button className="btn btn-primary btn-sm">Watch</button>
-                  <button className="btn btn-outline btn-sm">Remove</button>
-                </div>
-              </div>
+              ))}
 
               <h3 style={{ fontFamily: "var(--font-display)", margin: "28px 0 14px" }}>MCQ Assignments</h3>
               <div className="grid-2" style={{ marginBottom: 28 }}>
-                <div className="panel">
-                  <div className="flex-between" style={{ marginBottom: 10 }}>
-                    <h4 style={{ margin: 0 }}>Quadratic Equations Test</h4>
-                    <span className="status-pill status-today">New</span>
+                {assignmentsData.assignments.map((a) => (
+                  <div className="panel" key={a.id}>
+                    <div className="flex-between" style={{ marginBottom: 10 }}>
+                      <h4 style={{ margin: 0 }}>{a.title}</h4>
+                      <span className={`status-pill status-${a.status === "done" ? "done" : "today"}`}>
+                        {a.status === "done" ? "Completed" : "New"}
+                      </span>
+                    </div>
+                    <p className="small-muted" style={{ margin: "0 0 14px" }}>
+                      {a.subject} · Due: {a.due}
+                    </p>
+                    <Link href="/exam-prep" className={`btn ${a.status === "done" ? "btn-outline" : "btn-primary"} btn-block`}>
+                      {a.status === "done" ? "Retry Test →" : "Start Test →"}
+                    </Link>
                   </div>
-                  <p className="small-muted" style={{ margin: "0 0 14px" }}>
-                    Mathematics · 5 MCQs · Generated by FLAN-T5 · Difficulty: Medium
-                  </p>
-                  <Link href="/exam-prep" className="btn btn-primary btn-block">
-                    Start Test →
-                  </Link>
-                </div>
-                <div className="panel">
-                  <div className="flex-between" style={{ marginBottom: 10 }}>
-                    <h4 style={{ margin: 0 }}>English Grammar — Tenses</h4>
-                    <span className="status-pill status-done">Completed</span>
-                  </div>
-                  <p className="small-muted" style={{ margin: "0 0 14px" }}>
-                    English · 5 MCQs · Score: 3/5
-                    <br />
-                    Score: 60% — Weak: Passive Voice
-                  </p>
-                  <Link href="/exam-prep" className="btn btn-outline btn-block">
-                    Retry Test →
-                  </Link>
-                </div>
+                ))}
               </div>
 
               <h3 style={{ fontFamily: "var(--font-display)", margin: "28px 0 14px" }}>Course PDFs</h3>
               <div className="grid-3">
-                <div className="panel">
-                  <h4 style={{ margin: "0 0 6px" }}>MDCAT Biology Full Syllabus 2025</h4>
-                  <p className="small-muted" style={{ margin: "0 0 14px" }}>
-                    4.2 MB · 2025 · Sindh Board
-                  </p>
-                  <button className="btn btn-outline btn-block btn-sm">Download</button>
-                </div>
-                <div className="panel">
-                  <h4 style={{ margin: "0 0 6px" }}>Mathematics Chapter Notes — Entry Test</h4>
-                  <p className="small-muted" style={{ margin: "0 0 14px" }}>
-                    1.8 MB · 2024 · Self-uploaded
-                  </p>
-                  <button className="btn btn-outline btn-block btn-sm">Download</button>
-                </div>
-                <div className="panel">
-                  <h4 style={{ margin: "0 0 6px" }}>CSS Past Papers 2020–2024</h4>
-                  <p className="small-muted" style={{ margin: "0 0 14px" }}>
-                    6.1 MB · FPSC Official PDFs
-                  </p>
-                  <button className="btn btn-outline btn-block btn-sm">Download</button>
-                </div>
+                {materialsData.materials.map((m) => (
+                  <div className="panel" key={m.id}>
+                    <h4 style={{ margin: "0 0 6px" }}>{m.title}</h4>
+                    <p className="small-muted" style={{ margin: "0 0 14px" }}>{m.subject}</p>
+                    <button className="btn btn-outline btn-block btn-sm">
+                      {m.downloaded ? "Re-download" : "Download"}
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

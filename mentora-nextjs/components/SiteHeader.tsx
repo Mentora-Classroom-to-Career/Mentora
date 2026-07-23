@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 
 type HeaderVariant = "public" | "app";
 
@@ -86,16 +87,43 @@ export default function SiteHeader({ variant = "public" }: { variant?: HeaderVar
               </Link>
             </>
           ) : isDashboard ? (
-            <Link href="/dashboard#settings" className="btn btn-ghost-light btn-sm">
-              Settings
-            </Link>
+            <>
+              <Link href="/dashboard#settings" className="btn btn-ghost-light btn-sm">
+                Settings
+              </Link>
+              <LogoutButton />
+            </>
           ) : (
-            <Link href="/dashboard" className="btn btn-ghost-light btn-sm">
-              My Profile
-            </Link>
+            <>
+              <Link href="/dashboard" className="btn btn-ghost-light btn-sm">
+                My Profile
+              </Link>
+              <LogoutButton />
+            </>
           )}
         </div>
       </div>
     </header>
+  );
+}
+
+function LogoutButton() {
+  const router = useRouter();
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  async function handleLogout() {
+    setLoggingOut(true);
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } finally {
+      router.push("/");
+      router.refresh();
+    }
+  }
+
+  return (
+    <button type="button" className="btn btn-outline btn-sm" onClick={handleLogout} disabled={loggingOut}>
+      {loggingOut ? "Logging out…" : "Logout"}
+    </button>
   );
 }
