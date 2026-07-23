@@ -320,7 +320,13 @@ def build_m1():
             "    preds = (probs >= 0.5).astype(int)\n"
             "    return {'f1_micro': f1_score(labels, preds, average='micro', zero_division=0)}"
         ),
-        md("## 3. Train — checkpoints every epoch to Drive, resumable"),
+        md("## 3. Train — checkpoints every epoch to Drive, resumable\n\n"
+           "**Note:** `fp16` is off below. DeBERTa-v3's disentangled attention "
+           "layer has a known incompatibility with PyTorch's `GradScaler` that "
+           "throws `ValueError: Attempting to unscale FP16 gradients` partway "
+           "through the first step — this isn't environment-specific, it's a "
+           "model architecture issue. DeBERTa-base is small enough that fp32 "
+           "training is still fine on a T4."),
         code(
             "import glob\n\n"
             "OUT_DIR = f'{MODELS}/model1_gap_classifier'\n\n"
@@ -334,7 +340,7 @@ def build_m1():
             "    eval_strategy='epoch',\n"
             "    load_best_model_at_end=True,\n"
             "    metric_for_best_model='f1_micro',\n"
-            "    fp16=True,\n"
+            "    fp16=False,  # see note above -- DeBERTa-v3 + fp16 GradScaler incompatibility\n"
             "    report_to='wandb' if 'wandb' in dir() else 'none',\n"
             ")\n\n"
             "trainer = Trainer(\n"
