@@ -59,43 +59,47 @@ against that floor.
 Either is a 5-minute change + a 2-minute rerun in Colab — worth trying
 before accepting MAE ~5.9 as final for the thesis.
 
-## M1 result — real run in Colab, two bugs found and fixed along the way
+## M1 result — real run in Colab, three issues found and fixed along the way
 
 **Bug 1 (fixed in commit dd0a9b7):** `fp16=True` + DeBERTa-v3 threw
 `ValueError: Attempting to unscale FP16 gradients` — a known
 architecture-level incompatibility between DeBERTa-v3's disentangled
 attention layer and PyTorch's `GradScaler`. Fixed by setting `fp16=False`.
 
-**Bug 2 (symptom, not a code bug):** with the fp16 fix applied, training
+**Symptom 2 (fixed in commit f4e4558):** with the fp16 fix applied, training
 completed cleanly for 5 epochs, and validation loss fell steadily
 (0.54 -> 0.27) — but `eval_f1_micro` stayed at **exactly 0.0 every single
-epoch**. That specific pattern (loss clearly decreasing, F1 stuck at
-precisely 0.0) is a known cold-start symptom for multi-label
-classification with very sparse positives: with 16 topic classes and
-~1 correct label per example, BCE loss rewards the model for predicting
-low probability almost everywhere long before it pushes the one correct
-label's probability past the default 0.5 threshold — especially with
-only ~59 training rows across 16 classes (under 4 examples per class on
-average).
+epoch**. Diagnosed as a multi-label cold-start symptom (16 classes, ~1
+positive label per example, ~59 training rows) and addressed with more
+epochs (5 -> 30), a threshold-sweep diagnostic cell, and a class-weighted
+`WeightedTrainer` (`pos_weight` in `BCEWithLogitsLoss`) to counter the
+label sparsity.
 
-**Fixes applied to the notebook:**
-1. Bumped `num_train_epochs` from 5 to 30 — training took ~70s for 5
-   epochs, so this is nearly free and gives the model more room to push
-   past the threshold.
-2. Added a threshold-sweep diagnostic cell (§5 in the notebook) that
-   checks max predicted probability per example and F1 at thresholds
-   0.5 down to 0.1 — this tells you which of two very different
-   situations you're in:
-   - If a lower threshold recovers a reasonable F1, the model learned
-     the right ranking, it's just underconfident from too little data.
-   - If F1 stays near 0 even at threshold 0.1, the 70-question starter
-     bank is genuinely too small for this model to learn from yet, and
-     the real fix is growing `datasets/processed/m1/question_bank.csv`
-     (see `datasets/SOURCES.md`), not more epochs or hyperparameter
-     tuning.
+**Bug 3 (my mistake, fixed in this commit):** the `WeightedTrainer` class
+added in commit f4e4558 was defined but never actually used — the `Trainer(
+...)` call two cells down was never updated to `WeightedTrainer(...)`, so
+that whole fix was silently a no-op. Running the notebook as-is (all 30
+epochs, unweighted loss, no LR warmup) produced a **collapsed model**: every
+example's predicted probability came out nearly identical (~0.3157,
+varying only in the 3rd decimal place) regardless of input text, and
+`train_loss` blew up to 61.89 (vs. ~0.53 in the earlier 5-epoch run) —
+consistent with training instability from a flat `learning_rate=2e-5` over
+240 steps with no warmup on a tiny dataset. Fixed by:
+1. Actually wiring `trainer = WeightedTrainer(...)` (the class was already
+   correct, just unused).
+2. Adding `warmup_ratio=0.1` and `weight_decay=0.01` to `TrainingArguments`
+   to stabilize the longer run.
+3. Adding a note about clearing stale checkpoints before re-running with
+   different loss/hyperparameters — `resume_from_checkpoint` will otherwise
+   silently resume optimizer/scheduler state from a run trained under
+   different settings.
+4. Rewriting the threshold-sweep "reading the result" guidance to check
+   for a collapsed model (near-identical probability across all examples)
+   *before* interpreting low F1 as "just needs a lower threshold" — those
+   are different failure modes with different fixes.
 
-Re-run the notebook with these fixes and check which case you land in
-before concluding anything about the F1 >= 0.85 target.
+Re-run the notebook with these fixes (delete old checkpoints first) and
+check the max-probability line before anything else.
 
 ## Running the rest (M4, M5, M2 — and re-running M1 with the fixes above)
 
