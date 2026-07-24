@@ -11,7 +11,7 @@ at the top calling out its specific adaptation.
 |---|---|---|
 | `train_m3.ipynb` | Performance Trajectory Predictor (LSTM) | **Ran for real in this environment — see result below** |
 | `train_m4.ipynb` | Career-Skill Semantic Matcher | Built, not run — needs `huggingface.co` (unreachable here) |
-| `train_m1.ipynb` | Knowledge Gap Classifier | Built, not run — needs `huggingface.co` |
+| `train_m1.ipynb` | Knowledge Gap Classifier | **Ran for real in Colab (by the user) — see result below** |
 | `train_m5.ipynb` | CV/Transcript NER Extractor | Built, not run — needs `huggingface.co` |
 | `train_m2.ipynb` | Adaptive Question Generator | Built, not run — needs `huggingface.co` |
 
@@ -53,11 +53,51 @@ against that floor.
 Either is a 5-minute change + a 2-minute rerun in Colab — worth trying
 before accepting MAE ~5.9 as final for the thesis.
 
-## Running the rest (M4, M1, M5, M2)
+## M1 result — real run in Colab, two bugs found and fixed along the way
+
+**Bug 1 (fixed in commit dd0a9b7):** `fp16=True` + DeBERTa-v3 threw
+`ValueError: Attempting to unscale FP16 gradients` — a known
+architecture-level incompatibility between DeBERTa-v3's disentangled
+attention layer and PyTorch's `GradScaler`. Fixed by setting `fp16=False`.
+
+**Bug 2 (symptom, not a code bug):** with the fp16 fix applied, training
+completed cleanly for 5 epochs, and validation loss fell steadily
+(0.54 -> 0.27) — but `eval_f1_micro` stayed at **exactly 0.0 every single
+epoch**. That specific pattern (loss clearly decreasing, F1 stuck at
+precisely 0.0) is a known cold-start symptom for multi-label
+classification with very sparse positives: with 16 topic classes and
+~1 correct label per example, BCE loss rewards the model for predicting
+low probability almost everywhere long before it pushes the one correct
+label's probability past the default 0.5 threshold — especially with
+only ~59 training rows across 16 classes (under 4 examples per class on
+average).
+
+**Fixes applied to the notebook:**
+1. Bumped `num_train_epochs` from 5 to 30 — training took ~70s for 5
+   epochs, so this is nearly free and gives the model more room to push
+   past the threshold.
+2. Added a threshold-sweep diagnostic cell (§5 in the notebook) that
+   checks max predicted probability per example and F1 at thresholds
+   0.5 down to 0.1 — this tells you which of two very different
+   situations you're in:
+   - If a lower threshold recovers a reasonable F1, the model learned
+     the right ranking, it's just underconfident from too little data.
+   - If F1 stays near 0 even at threshold 0.1, the 70-question starter
+     bank is genuinely too small for this model to learn from yet, and
+     the real fix is growing `datasets/processed/m1/question_bank.csv`
+     (see `datasets/SOURCES.md`), not more epochs or hyperparameter
+     tuning.
+
+Re-run the notebook with these fixes and check which case you land in
+before concluding anything about the F1 >= 0.85 target.
+
+## Running the rest (M4, M5, M2 — and re-running M1 with the fixes above)
 
 1. Upload `datasets/` (the repo folder) to Google Drive at
    `MyDrive/mentora_data/` — matching Phase 3's storage convention.
 2. Open each notebook in Colab, `Runtime -> Change runtime type -> T4 GPU`.
-3. Run top to bottom, in priority order: M4, M1, M5, M2 (M3 already done
-   above, but re-running in real Colab with a real GPU is still worth
-   doing before Phase 5, since this sandbox result was CPU-only).
+3. Run top to bottom: M4, then M5, then M2 (M1 already ran once — re-run
+   it with the fp16 + epoch-count + threshold-sweep fixes above before
+   trusting its metric; M3 already done too, but re-running in real
+   Colab with a real GPU is still worth doing before Phase 5, since this
+   sandbox result was CPU-only).
