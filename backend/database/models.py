@@ -86,7 +86,9 @@ class Question(Base):
     option_b = Column(String(500), nullable=False)
     option_c = Column(String(500), nullable=False)
     option_d = Column(String(500), nullable=False)
-    correct_answer = Column(String(1), nullable=False)  # "A" | "B" | "C" | "D"
+    option_e = Column(String(500), nullable=True)     # only populated for 5-way MCQ sources (e.g. AQuA math)
+    passage = Column(Text, nullable=True)               # reading-comprehension / cloze-test context, when the question isn't self-contained
+    correct_answer = Column(String(1), nullable=False)  # "A" | "B" | "C" | "D" | "E"
     source = Column(String(50), default="bank")           # "bank" | "generated" (M2 output)
 
     answers = relationship("SessionAnswer", back_populates="question")

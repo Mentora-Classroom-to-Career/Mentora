@@ -277,10 +277,15 @@ def build_m1():
     cells = [
         md("# MENTORA — Train M1: Knowledge Gap Classifier (DeBERTa-v3-base)\n\n"
            "Target: **F1 (micro) >= 0.85**.\n\n"
-           "**Note:** our starter `question_bank.csv` has 70 questions total "
-           "(target is 150-300 per subject — see datasets/SOURCES.md). Expect "
-           "this run to be a pipeline smoke test more than a metric-hitting run "
-           "until the bank is scaled up with real past-paper questions."),
+           "**Note:** `question_bank.csv` now has 1,724 real questions sourced "
+           "from AQuA-RAT, ARC-derived science questions, RACE-C, and CLOTH "
+           "(see datasets/SOURCES.md for full provenance/licenses) plus the "
+           "original 70 hand-authored starter questions — a big jump from the "
+           "70-question smoke-test scale this notebook was first validated "
+           "against. Some topics are still thin (Calculus, Modern Physics, "
+           "Writing) purely because the source datasets skew away from them — "
+           "see SOURCES.md's 'known imbalances' section before reading too much "
+           "into per-topic F1 on those specific classes."),
         *SHARED_SETUP,
         pip_cell(),
         WANDB_CELL_MD, WANDB_CELL_CODE,
@@ -320,17 +325,16 @@ def build_m1():
             "    preds = (probs >= 0.5).astype(int)\n"
             "    return {'f1_micro': f1_score(labels, preds, average='micro', zero_division=0)}"
         ),
-        md("## 2b. Class-imbalance weighting — needed for a small, single-topic-per-question dataset\n\n"
-           "With ~70 questions spread across ~16-23 topics, each row's multi-hot "
-           "label vector is almost all zeros (one positive topic out of many). "
-           "Plain `BCEWithLogitsLoss` will happily learn to predict all-negative "
-           "on a dataset this imbalanced/small, giving `f1_micro=0.0` even though "
-           "`eval_loss` looks reasonable — that's a real failure mode, not a bug, "
-           "and it's exactly what an initial run of this notebook hit. Weighting "
-           "the loss toward positive examples (`pos_weight` in "
-           "`BCEWithLogitsLoss`) is the standard fix for this. **This class is used "
-           "two cells down, replacing the plain `Trainer`** — an earlier version of "
-           "this notebook defined it here but never actually switched to it, which "
+        md("## 2b. Class-imbalance weighting\n\n"
+           "Even with 1,724 questions, each row is still single-topic against "
+           "16 possible topics, so the multi-hot label vector is still mostly "
+           "zeros per row. Weighting the loss toward positive examples "
+           "(`pos_weight` in `BCEWithLogitsLoss`) remains worth keeping — it "
+           "matters less at this scale than it did at 70 questions, but costs "
+           "nothing and helps most on the still-thin topics (Calculus, Modern "
+           "Physics, Writing — see SOURCES.md). **This class is used two cells "
+           "down, replacing the plain `Trainer`** — an earlier version of this "
+           "notebook defined it here but never actually switched to it, which "
            "silently made this whole cell a no-op. Fixed now."),
         code(
             "import torch\n"
@@ -378,11 +382,11 @@ def build_m1():
             "    output_dir=OUT_DIR,\n"
             "    per_device_train_batch_size=8,\n"
             "    per_device_eval_batch_size=8,\n"
-            "    num_train_epochs=30,  # bumped from 5 -- with only ~59 training rows this trains\n"
-            "                          # in under a minute on a T4, so more epochs is nearly free\n"
+            "    num_train_epochs=15,  # with ~1,465 training rows (85% of 1,724) this dataset is\n"
+            "                          # big enough that 30 epochs risks overfitting -- start at 15\n"
+            "                          # and watch eval_f1_micro before pushing higher\n"
             "    learning_rate=2e-5,\n"
-            "    warmup_ratio=0.1,     # ~24 warmup steps out of 240 -- prevents the early-training\n"
-            "                          # LR spike that a flat schedule can cause on this few steps\n"
+            "    warmup_ratio=0.1,\n"
             "    weight_decay=0.01,\n"
             "    save_strategy='epoch',\n"
             "    eval_strategy='epoch',\n"
@@ -446,7 +450,7 @@ def build_m1():
         md("## Target metric: F1 (micro) >= 0.85\n\nIf it plateaus lower:\n"
            "- Sweep the classification threshold (0.3/0.4/0.5/0.6) on validation\n"
            "- Check per-topic example counts — merge near-unlearnable rare subtopics into their parent\n"
-           "- Highest-leverage fix: grow the M1 question bank past the 70-question starter set (also directly benefits M2)"),
+           "- Highest-leverage fix: address the specific thin-topic imbalances noted in datasets/SOURCES.md (Calculus, Modern Physics, Writing) rather than growing the bank uniformly"),
     ]
     return make_notebook(cells)
 
@@ -563,10 +567,10 @@ def build_m2():
     cells = [
         md("# MENTORA — Train M2: Adaptive Question Generator (FLAN-T5-Large + LoRA)\n\n"
            "Do this one last — heaviest lift. Target: **BLEU-4 >= 0.35, ROUGE-L >= 0.50**.\n\n"
-           "**Note:** our `flan_t5_training_data.csv` currently has 70 prompt/target "
-           "pairs (target is 500+ — see datasets/SOURCES.md; it scales automatically "
-           "as M1's question bank grows). Expect this run to be a pipeline smoke test "
-           "until then."),
+           "**Note:** `flan_t5_training_data.csv` now has 1,724 prompt/target "
+           "pairs (target was 500+ — met, see datasets/SOURCES.md), derived "
+           "automatically from M1's real question bank. This should be a real "
+           "training run now, not just a pipeline smoke test."),
         *SHARED_SETUP,
         pip_cell(),
         WANDB_CELL_MD, WANDB_CELL_CODE,
