@@ -38,9 +38,11 @@ m2_data = questions.apply(to_flan_t5_example, axis=1)
 m2_data.to_csv(OUT_DIR / "flan_t5_training_data.csv", index=False)
 
 print(f"{len(m2_data)} prompt/target pairs -> {OUT_DIR / 'flan_t5_training_data.csv'}")
-print("Target is 500+ per §6.4 — currently short because M1's starter bank is a")
-print("starter set (70 questions). Scaling up M1 with real past-paper questions")
-print("scales this file automatically on the next run.")
+if len(m2_data) >= 500:
+    print(f"Target of 500+ per §6.4 met ({len(m2_data)} pairs).")
+else:
+    print(f"Target is 500+ per §6.4 — currently at {len(m2_data)}, short because M1's bank is still")
+    print("smaller than the full target volume. Scaling up M1 scales this file automatically on the next run.")
 
 print("\nDifficulty spread:")
 print(questions["difficulty"].value_counts())

@@ -1,0 +1,10 @@
+# Real downloaded source datasets are large (300MB+) and re-downloadable —
+# see SOURCES.md for exact URLs. Keep them out of git; the processed
+# question_bank.csv (the actual deliverable) IS committed.
+# Real downloaded source datasets are large (300MB+) and re-downloadable —
+# see SOURCES.md for exact URLs. Keep them out of git; the processed
+# question_bank.csv (the actual deliverable) IS committed. science/ is small
+# (636K) so it's committed directly instead of excluded here.
+raw/aqua/
+raw/cloth/
+raw/race_c/
