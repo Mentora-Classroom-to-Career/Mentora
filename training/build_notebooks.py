@@ -291,7 +291,7 @@ def build_m1():
         WANDB_CELL_MD, WANDB_CELL_CODE,
         md("## 1. Load and tokenize"),
         code(
-            "from transformers import AutoTokenizer, AutoModelForSequenceClassification, TrainingArguments, Trainer\n"
+            "from transformers import AutoTokenizer, AutoModelForSequenceClassification, TrainingArguments, Trainer, EarlyStoppingCallback\n"
             "from datasets import Dataset\n"
             "import pandas as pd, numpy as np\n\n"
             "df = pd.read_csv(f'{DATA}/processed/m1/question_bank.csv')\n"
@@ -410,11 +410,18 @@ def build_m1():
             "    metric_for_best_model='f1_micro',\n"
             "    fp16=False,  # see note above -- DeBERTa-v3 + fp16 GradScaler incompatibility\n"
             "    report_to='wandb' if 'wandb' in dir() else 'none',\n"
+            "    save_total_limit=3,   # keep only the 3 most recent checkpoints -- avoids filling\n"
+            "                          # up Drive across repeated runs\n"
             ")\n\n"
             "trainer = WeightedTrainer(\n"
             "    model=model, args=args,\n"
             "    train_dataset=ds['train'], eval_dataset=ds['test'],\n"
             "    compute_metrics=compute_metrics,\n"
+            "    callbacks=[EarlyStoppingCallback(early_stopping_patience=3)],\n"
+            "    # a real run peaked at epoch 1 (F1=0.567) then got steadily WORSE through\n"
+            "    # epoch 15 (down to ~0.15) while eval_loss climbed the whole time --\n"
+            "    # load_best_model_at_end still rescues the good checkpoint, but epochs 2-15\n"
+            "    # were wasted compute. Early stopping cuts that off automatically.\n"
             ")\n\n"
             "def find_valid_checkpoint(out_dir):\n"
             "    # Sort numerically by step (glob + plain sorted() sorts 'checkpoint-100' before\n"
@@ -475,17 +482,30 @@ def build_m1():
            "what the warmup/weight-decay/class-weighting fixes above (§2b/§3) address.\n"
            "- If probabilities vary meaningfully example-to-example and a lower threshold "
            "(e.g. 0.2-0.3) recovers a reasonable F1, the model learned the right ranking, "
-           "it's just underconfident from too little data — usable with that lower "
-           "threshold in the app's inference code, though growing the question bank is "
-           "still the real fix long-term.\n"
-           "- If probabilities vary but F1 stays near 0 even at threshold 0.1, the 70-"
-           "question starter set is genuinely too small (59 training rows / 16 classes "
-           "averages under 4 examples per class) — scaling up "
-           "`datasets/scripts/generate_m1_starter_bank.py` with real past-paper questions "
-           "per `datasets/SOURCES.md` is the fix, not more epochs or a different threshold."),
+           "it's just underconfident — usable with that lower threshold in the app's "
+           "inference code, though addressing the specific thin-topic imbalances below is "
+           "the more defensible long-term fix.\n"
+           "- If probabilities vary but F1 stays near 0 even at threshold 0.1, something "
+           "is genuinely broken (not just underconfident) — recheck the training loss "
+           "curve for the NaN-divergence or collapse patterns documented above."),
+        md("## 6. Per-topic F1 breakdown — which topics are actually dragging the average down?\n\n"
+           "The overall `f1_micro` mixes well-represented topics (Algebra: 594 source "
+           "questions) with genuinely thin ones (Calculus, Modern Physics, Writing — see "
+           "`datasets/SOURCES.md`'s 'known imbalances' section). This breaks it out per "
+           "topic so you can tell which is which before deciding whether the fix is more "
+           "epochs, more data for specific topics, or accepting a lower ceiling on the "
+           "thin ones."),
+        code(
+            "from sklearn.metrics import classification_report\n\n"
+            "preds_at_best_threshold = (probs >= 0.5).astype(int)\n"
+            "print(classification_report(labels, preds_at_best_threshold, target_names=topics, zero_division=0))"
+        ),
         md("## Target metric: F1 (micro) >= 0.85\n\nIf it plateaus lower:\n"
            "- Sweep the classification threshold (0.3/0.4/0.5/0.6) on validation\n"
-           "- Check per-topic example counts — merge near-unlearnable rare subtopics into their parent\n"
+           "- Check the per-topic breakdown above — a low overall F1 dragged down by a "
+           "handful of genuinely thin topics is a different problem than uniformly weak "
+           "performance, and calls for a different fix (targeted data for those topics, "
+           "vs. something wrong with training generally)\n"
            "- Highest-leverage fix: address the specific thin-topic imbalances noted in datasets/SOURCES.md (Calculus, Modern Physics, Writing) rather than growing the bank uniformly"),
     ]
     return make_notebook(cells)

@@ -101,6 +101,49 @@ consistent with training instability from a flat `learning_rate=2e-5` over
 Re-run the notebook with these fixes (delete old checkpoints first) and
 check the max-probability line before anything else.
 
+**Dataset swap (commit ab43dcc):** at this point the question bank itself
+was replaced — 70 hand-authored questions -> 1,724 real questions sourced
+from AQuA-RAT, ARC-derived science questions, RACE-C, and CLOTH (see
+`datasets/SOURCES.md` for full provenance/licenses). M2's 500+ target was
+met automatically as a result.
+
+**Bug 4 (fixed in commit 5d512df):** re-running against the larger dataset
+hit `ValueError: Can't find a valid checkpoint at .../checkpoint-96` — a
+leftover checkpoint from before `num_train_epochs` changed 30 -> 15 (which
+shifts the total step count). Also revealed `pos_weight` reaching **430**
+for the thinnest classes (Calculus, Writing) on the real data. Fixed:
+checkpoint discovery now sorts numerically by step (plain `sorted()` on
+`checkpoint-*` paths is a latent bug — string sort puts `checkpoint-100`
+before `checkpoint-96`), validates a checkpoint has the files needed to
+actually resume before trusting it, and falls back to a fresh run
+automatically instead of crashing. `pos_weight` capped at 20.0.
+
+**Bug 5 (fixed in commit 324d30d):** next run hit DeBERTa-v3's
+well-documented NaN-divergence issue: `eval_loss` fine at epoch 1 (10.76),
+then `nan` from epoch 2 on; every predicted probability saturated to
+exactly `1.0` (`RuntimeWarning: overflow encountered in exp`);
+`eval_f1_micro` stuck at exactly 0.0. This is a known model-level
+instability (PyTorch's default `adam_epsilon=1e-8` is too small for
+DeBERTa-v3's numerics on smaller datasets) — fixed by raising
+`adam_epsilon` to `1e-6` and lowering `learning_rate` to `1e-5`.
+
+**Real result (this run):** clean training, no divergence, no collapse.
+**`eval_f1_micro` peaked at 0.567 (epoch 1)**, then declined every epoch
+after (0.297, 0.257, ..., down to ~0.15 by epoch 15) while validation loss
+climbed the whole time — textbook overfitting on a dataset this size.
+`load_best_model_at_end=True` correctly restored the epoch-1 checkpoint,
+so the final reported metric (0.567) is real and not contaminated by the
+overfit tail — but epochs 2-15 were wasted compute. Fixed by adding
+`EarlyStoppingCallback(early_stopping_patience=3)` and a per-topic
+`classification_report` cell (§6) to distinguish "uniformly weak" from
+"a few genuinely thin topics dragging the average down" — the latter is
+what `datasets/SOURCES.md`'s known imbalances (Calculus, Modern Physics,
+Writing) would predict, and calls for a different fix than more epochs.
+
+0.567 is real, meaningful progress from 0.0, but still short of the 0.85
+target. Next run's per-topic breakdown should clarify whether closing that
+gap needs more data for specific topics or something else.
+
 ## Running the rest (M4, M5, M2 — and re-running M1 with the fixes above)
 
 1. Upload `datasets/` (the repo folder) to Google Drive at
