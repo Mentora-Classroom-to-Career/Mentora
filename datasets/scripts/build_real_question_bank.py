@@ -54,9 +54,11 @@ def add_row(subject, topic, difficulty, question_text, options, correct_answer, 
 # ============================================================ AQuA (Math) ==
 MATH_KEYWORDS = {
     "Geometry": ["triangle", "circle", "square", "rectangle", "cylinder", "sphere", "angle", "perimeter",
-                 "diameter", "radius", "polygon", "cube", "volume of", "area of"],
+                 "diameter", "radius", "polygon", "cube", "volume of", "area of", "trapezoid", "parallelogram",
+                 "hexagon", "pentagon", "vertex", "vertices", "circumference"],
     "Trigonometry": ["sin(", "cos(", "tan(", "sine", "cosine", "tangent", "degrees"],
-    "Statistics": ["average", "mean", "median", "probability", "standard deviation", "percent", "ratio of"],
+    "Statistics": ["average", "mean", "median", "probability", "standard deviation", "percent", "ratio of",
+                   "combination", "permutation", "odds of", "likelihood"],
     "Calculus": ["derivative", "integral", "rate of change", "limit as"],
 }
 
@@ -92,14 +94,17 @@ def load_aqua(n_sample=600):
 
 # ================================================ science-questions (Sci) ==
 PHYSICS_TOPIC_KEYWORDS = {
-    "Electricity & Magnetism": ["circuit", "electric", "current", "voltage", "battery", "magnet", "wire"],
-    "Waves & Optics": ["light", "sound", "wave", "reflect", "lens", "mirror", "frequency", "echo"],
-    "Modern Physics": ["radioactiv", "nuclear", "atom", "particle"],
+    "Electricity & Magnetism": ["circuit", "electric", "current", "voltage", "battery", "magnet", "wire",
+                                 "resistor", "conductor", "insulator", "charge"],
+    "Waves & Optics": ["light", "sound", "wave", "reflect", "lens", "mirror", "frequency", "echo",
+                        "refraction", "prism", "pitch", "vibration"],
+    "Modern Physics": ["radioactiv", "nuclear", "atom", "particle", "isotope", "half-life", "fission", "fusion"],
     "Mechanics": ["force", "motion", "energy", "friction", "gravity", "speed", "velocity", "mass", "weight",
-                  "machine", "pulley", "lever", "acceleration"],
+                  "machine", "pulley", "lever", "acceleration", "momentum", "inertia", "pressure"],
 }
 CHEMISTRY_TOPIC_KEYWORDS = {
-    "Organic": ["carbon compound", "hydrocarbon", "organic"],
+    "Organic": ["carbon compound", "hydrocarbon", "organic", "polymer", "fuel", "petroleum", "combustion",
+                "photosynthesis", "cellular respiration", "carbohydrate", "protein", "fat"],
     "Inorganic": ["element", "compound", "mixture", "metal", "periodic table", "molecule", "atom", "ion"],
     "Physical Chemistry": ["reaction", "acid", "base", "ph ", "solution", "solubility", "state of matter",
                             "boiling", "melting", "evaporat", "condens", "chemical change", "physical change"],
@@ -182,6 +187,8 @@ DISCOURSE_MARKERS = {
     "however", "therefore", "moreover", "furthermore", "meanwhile", "although", "besides",
     "nevertheless", "otherwise", "instead", "thus", "hence", "consequently", "similarly",
     "in addition", "as a result", "for example", "in fact", "in other words",
+    "in conclusion", "on the other hand", "in contrast", "for instance", "in summary",
+    "first", "second", "finally", "next", "then", "after that", "in short",
 }
 FUNCTION_POS = {"ADP", "CCONJ", "SCONJ", "DET", "PRON", "AUX", "PART"}
 
@@ -256,10 +263,10 @@ def load_hand_authored():
     print(f"hand-authored starter: carried forward {added} questions")
 
 
-load_aqua(n_sample=600)
+load_aqua(n_sample=4000)
 load_science_questions()
-load_race_c(n_sample=250)
-load_cloth(n_sample=350)
+load_race_c(n_sample=500)
+load_cloth(n_sample=2000)
 load_hand_authored()
 
 df = pd.DataFrame(rows)

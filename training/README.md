@@ -138,6 +138,36 @@ Writing) would predict, and calls for a different fix than more epochs.
 target. Next run's per-topic breakdown should clarify whether closing that
 gap needs more data for specific topics or something else.
 
+**Second real run (per-topic breakdown, commit 0d04b5e's notebook):** early
+stopping worked correctly this time, stopping at epoch 4/15.
+`eval_f1_micro = 0.507` (close to the first run, some run-to-run variance
+expected). The new per-topic `classification_report` cell gave the real
+diagnosis: Vocabulary (F1 0.93), Algebra (0.73), Inorganic (0.44), Reading
+Comprehension (0.42), Mechanics (0.39), and Statistics (0.28) all learned
+something real. **10 topics scored exactly 0.0** — every one of them had
+under 12 examples in the eval set. Clean signal: topics with real support
+learn; topics without it don't, regardless of epochs or weighting.
+
+**Data-scaling pass (this commit):** rather than hunting for new bespoke
+per-topic sources (tried — hit Chinese-language-only datasets, image-
+dependent geometry datasets, and HuggingFace-only-hosted benchmarks with no
+GitHub mirror), scaled up sampling from the sources already integrated and
+validated: AQuA 600->4,000, CLOTH 350->2,000, RACE-C 250->500, plus wider
+topic-keyword lists. Question bank grew 1,724 -> 6,942. 7 of the 10
+zero-F1 topics now have real support (Geometry 11->264, Trigonometry
+->63, Grammar 7->187, Writing 4->32, Electricity & Magnetism 8->49,
+Waves & Optics 10->69, Mechanics 16->132). **3 stay genuinely thin**
+(Calculus 6, Modern Physics 8, Organic 17) — confirmed structural, not a
+sampling gap: AQuA has almost no calculus content and the ARC-derived
+science source has almost no nuclear-physics/organic-chemistry content at
+its grade level, no matter how much of either source gets sampled. Full
+breakdown and per-topic counts in `datasets/SOURCES.md`.
+
+Next run against the 6,942-question bank should show most of the
+previously-zero topics learning something real, with Calculus/Modern
+Physics/Organic remaining the honest exception until a dedicated source
+is added for those three specifically.
+
 ## Running the rest (M4, M5, M2 — and re-running M1 with the fixes above)
 
 1. Upload `datasets/` (the repo folder) to Google Drive at

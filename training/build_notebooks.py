@@ -277,15 +277,17 @@ def build_m1():
     cells = [
         md("# MENTORA — Train M1: Knowledge Gap Classifier (DeBERTa-v3-base)\n\n"
            "Target: **F1 (micro) >= 0.85**.\n\n"
-           "**Note:** `question_bank.csv` now has 1,724 real questions sourced "
+           "**Note:** `question_bank.csv` now has 6,942 real questions sourced "
            "from AQuA-RAT, ARC-derived science questions, RACE-C, and CLOTH "
-           "(see datasets/SOURCES.md for full provenance/licenses) plus the "
-           "original 70 hand-authored starter questions — a big jump from the "
-           "70-question smoke-test scale this notebook was first validated "
-           "against. Some topics are still thin (Calculus, Modern Physics, "
-           "Writing) purely because the source datasets skew away from them — "
-           "see SOURCES.md's 'known imbalances' section before reading too much "
-           "into per-topic F1 on those specific classes."),
+           "(see datasets/SOURCES.md for full provenance/licenses) — a real "
+           "training run on the first pass (1,724 questions) achieved F1=0.507 "
+           "but showed 10 topics with under-12-example support scoring exactly "
+           "0.0. A second pass increased sampling and widened keyword "
+           "classification, pulling far more of what was already in these "
+           "sources; 7 of those 10 topics now have real support. Three "
+           "(Calculus, Modern Physics, Organic) stay genuinely thin — those "
+           "specific topics are almost absent from the underlying sources "
+           "regardless of sampling, see SOURCES.md."),
         *SHARED_SETUP,
         pip_cell(),
         WANDB_CELL_MD, WANDB_CELL_CODE,
@@ -326,13 +328,13 @@ def build_m1():
             "    return {'f1_micro': f1_score(labels, preds, average='micro', zero_division=0)}"
         ),
         md("## 2b. Class-imbalance weighting\n\n"
-           "Even with 1,724 questions, each row is still single-topic against "
+           "Even with 6,942 questions, each row is still single-topic against "
            "16 possible topics, so the multi-hot label vector is still mostly "
            "zeros per row. Weighting the loss toward positive examples "
            "(`pos_weight` in `BCEWithLogitsLoss`) remains worth keeping — it "
-           "matters less at this scale than it did at 70 questions, but costs "
-           "nothing and helps most on the still-thin topics (Calculus, Modern "
-           "Physics, Writing — see SOURCES.md). **This class is used two cells "
+           "matters most for the 3 topics that stayed thin even after the "
+           "second, wider data pull (Calculus, Modern Physics, Organic — see "
+           "SOURCES.md). **This class is used two cells "
            "down, replacing the plain `Trainer`** — an earlier version of this "
            "notebook defined it here but never actually switched to it, which "
            "silently made this whole cell a no-op. Fixed now."),
@@ -395,9 +397,9 @@ def build_m1():
             "    output_dir=OUT_DIR,\n"
             "    per_device_train_batch_size=8,\n"
             "    per_device_eval_batch_size=8,\n"
-            "    num_train_epochs=15,  # with ~1,465 training rows (85% of 1,724) this dataset is\n"
-            "                          # big enough that 30 epochs risks overfitting -- start at 15\n"
-            "                          # and watch eval_f1_micro before pushing higher\n"
+            "    num_train_epochs=15,  # with ~5,900 training rows (85% of 6,942) this is a real dataset\n"
+            "                          # now, not a smoke test -- EarlyStoppingCallback below (patience=3)\n"
+            "                          # will cut this short automatically once F1 stops improving\n"
             "    learning_rate=1e-5,   # lowered from 2e-5 -- extra headroom against DeBERTa-v3 divergence\n"
             "    adam_epsilon=1e-6,    # raised from PyTorch's default 1e-8 -- see note above\n"
             "    max_grad_norm=1.0,    # explicit (matches the default, but stated -- gradient clipping\n"
@@ -623,10 +625,10 @@ def build_m2():
     cells = [
         md("# MENTORA — Train M2: Adaptive Question Generator (FLAN-T5-Large + LoRA)\n\n"
            "Do this one last — heaviest lift. Target: **BLEU-4 >= 0.35, ROUGE-L >= 0.50**.\n\n"
-           "**Note:** `flan_t5_training_data.csv` now has 1,724 prompt/target "
-           "pairs (target was 500+ — met, see datasets/SOURCES.md), derived "
-           "automatically from M1's real question bank. This should be a real "
-           "training run now, not just a pipeline smoke test."),
+           "**Note:** `flan_t5_training_data.csv` now has 6,942 prompt/target "
+           "pairs (target was 500+ — comfortably met, see datasets/SOURCES.md), "
+           "derived automatically from M1's real question bank. This should be "
+           "a real training run now, not just a pipeline smoke test."),
         *SHARED_SETUP,
         pip_cell(),
         WANDB_CELL_MD, WANDB_CELL_CODE,
