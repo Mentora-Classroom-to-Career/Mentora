@@ -15,94 +15,112 @@ hesitating. Keep it updated every time a dataset changes.
 | Model | Dataset | Status | Real source | Rows/count |
 |---|---|---|---|---|
 | M3 | `processed/m3/score_histories*.csv` | **Final** | Fully synthetic by design (per the master plan — no real users yet) | 10,639 rows / 800 students |
-| M1 | `processed/m1/question_bank.csv` | **Real, web-sourced** | See "M1 real sources" below | 1,724 questions |
+| M1 | `processed/m1/question_bank.csv` | **Real, web-sourced** | See "M1 real sources" below | 6,942 questions |
 | M1 | `processed/m1/synthetic_answer_sessions.csv` | **Final structure, scales with the bank** | Synthetic sessions layered on the real question bank above (standard cold-start approach) | 10,935 rows / 499 students |
-| M2 | `processed/m2/flan_t5_training_data.csv` | **Real — target met** | Derived entirely from M1's question bank | 1,724 pairs (target: 500+, met) |
+| M2 | `processed/m2/flan_t5_training_data.csv` | **Real — target met** | Derived entirely from M1's question bank | 6,942 pairs (target: 500+, met) |
 | M4 | `processed/m4/career_profiles.csv` | Starter placeholder — replace with real O*NET join | Hand-authored, not sourced from O*NET (O*NET's download site wasn't reachable from the build environment used) | 50 careers |
 | M4 | `processed/m4/training_pairs.csv` | Starter placeholder | Derived from the career_profiles.csv above, same limitation | 100 pairs |
 | M5 | `labeled/m5/gold_val_test.jsonl` | Starter — needs scaling up with real resumes | 20 hand-authored resumes (not from Kaggle), auto-tagged with spaCy PhraseMatcher + regex, used directly as gold since entities were written unambiguously | 20 resumes |
 
 ## M1 real sources
 
-M1's question bank (1,724 questions) was rebuilt from four real, licensed,
+M1's question bank (6,942 questions) was rebuilt from four real, licensed,
 web-sourced datasets plus the original 70 hand-authored starter questions
 (kept for continuity, tagged `source: hand_authored_starter`). Raw files
 live in `datasets/raw/<name>/` exactly as downloaded; processing script is
 `datasets/scripts/build_real_question_bank.py`.
 
-### Mathematics — AQuA-RAT (594 questions)
+This went through two passes: an initial pass sampled 600-350 questions per
+source, which trained cleanly but left 10 topics with under-12-example
+support and exactly 0.0 F1 on each (see a full real training run's
+diagnosis in `training/README.md`). Since the per-topic breakdown showed
+those topics needed volume, not a different training approach, the second
+pass increased sampling (AQuA 600->4000, CLOTH 350->2000, RACE-C 250->500)
+and widened the keyword classification lists — both pull MORE of what's
+already in these real, already-vetted sources, rather than introducing new
+ones. All the counts below are post-second-pass.
+
+### Mathematics — AQuA-RAT (3,926 questions)
 - **Source:** [google-deepmind/AQuA](https://github.com/google-deepmind/AQuA) — ~100K crowdsourced
   algebraic word problems with 5-way multiple choice (A-E) and natural-language rationales.
 - **License:** Apache License 2.0 (Copyright 2017 Google Inc.) — free to use, including commercially.
-- **How it's used:** sampled 600 questions from `train.json`, classified into
-  Algebra/Geometry/Trigonometry/Statistics/Calculus via keyword heuristics
-  (defaults to Algebra, matching AQuA's actual content skew), difficulty
-  approximated from rationale length (a proxy, not an authoritative
-  difficulty label — AQuA doesn't provide one).
+- **How it's used:** sampled 4,000 questions from `train.json` (up from 600),
+  classified into Algebra/Geometry/Trigonometry/Statistics/Calculus via
+  keyword heuristics (defaults to Algebra), difficulty approximated from
+  rationale length (a proxy, not an authoritative difficulty label — AQuA
+  doesn't provide one).
+- **Per-topic counts:** Algebra 2,690, Statistics 903, Geometry 264,
+  Trigonometry 63, **Calculus 6**. Calculus stays thin even at 4,000
+  samples — AQuA is genuinely an algebra-word-problem dataset with almost
+  no calculus content to keyword-match, not a sampling shortfall. A
+  calculus-specific source would be needed to fix this one.
 - **Note:** the M1 `Question` schema gained an `option_e` column
   specifically to fit AQuA's 5-way format; 4-option sources leave it null.
 
-### Physics & Chemistry — science-questions CSV, ARC-derived (463 questions)
+### Physics & Chemistry — science-questions CSV, ARC-derived (473 questions)
 - **Source:** [joelgrus/science-questions](https://github.com/joelgrus/science-questions) —
   a CSV of real US state department of education released science exam items
   (elementary/middle school), the same underlying data as AI2's ARC dataset.
 - **License:** ARC itself is CC BY-SA (Allen Institute for AI) — **requires
-  attribution and share-alike** if redistributed. This file is a reformatting
-  of publicly released state exam items; attribute as: "Questions derived
-  from the AI2 Reasoning Challenge (ARC) dataset / state department of
-  education released items, CC BY-SA."
+  attribution and share-alike** if redistributed. Attribute as: "Questions
+  derived from the AI2 Reasoning Challenge (ARC) dataset / state department
+  of education released items, CC BY-SA."
 - **How it's used:** the source CSV only tags coarse subjects (Science/
   Biology/Science and Technology), not Physics/Chemistry specifically, so
-  `classify_science()` keyword-matches each question stem into our
-  Physics (Mechanics, Electricity & Magnetism, Waves & Optics, Modern
-  Physics) or Chemistry (Organic, Inorganic, Physical Chemistry) topics,
+  `classify_science()` keyword-matches each question stem into our topics,
   **discarding** anything that doesn't clearly match (including all Biology
-  — not in our taxonomy). This is why Chemistry skews heavily toward
-  "Inorganic" (208 of 224) — the keyword list for Organic is narrow and the
-  source pool has few organic-chemistry items at this grade level. Consider
-  widening `CHEMISTRY_TOPIC_KEYWORDS["Organic"]` or sourcing a
-  chemistry-specific dataset if that imbalance matters for training.
+  — not in our taxonomy). Keyword lists were widened in the second pass
+  (added isotope/half-life/fission/fusion for Modern Physics; polymer/
+  combustion/protein/fat etc. for Organic).
+- **Per-topic counts:** Physics — Mechanics 132, Waves & Optics 69,
+  Electricity & Magnetism 49, **Modern Physics 8**. Chemistry — Inorganic
+  205, **Organic 17**, Physical Chemistry 23. Modern Physics and Organic
+  stay thin even after widening keywords — this grade-school-level source
+  simply has almost no nuclear-physics or organic-chemistry content. A
+  dedicated source would be needed to fix these two specifically.
 
-### English Reading Comprehension — RACE-C (247 questions)
+### English Reading Comprehension — RACE-C (496 questions)
 - **Source:** [mrcdata/race-c](https://github.com/mrcdata/race-c) — real
   college-English-exam reading comprehension passages + MCQs from China,
   a supplement to the original RACE dataset (Lai et al., 2017).
 - **License:** **"This dataset is intended for non-commercial research
   purpose only"** (per the repo's `license.txt`) — fine for this FYP/thesis,
-  but flag clearly if MENTORA is ever commercialized: this subset would need
-  to be replaced or a commercial-use license would need to be obtained.
-- **How it's used:** sampled one question per passage (250 passages sampled,
-  247 survived dedup) to keep passage repetition low; full passage stored in
-  the new `passage` column, difficulty fixed at "hard" (all RACE-C content
-  is college-level).
+  but flag clearly if MENTORA is ever commercialized.
+- **How it's used:** sampled one question per passage (500 passages sampled,
+  up from 250); full passage stored in the `passage` column, difficulty
+  fixed at "hard" (all RACE-C content is college-level).
 
-### English Grammar/Vocabulary/Writing — CLOTH (350 questions)
+### English Grammar/Vocabulary/Writing — CLOTH (2,000 questions)
 - **Source:** [zhaowei8188127/Large-scale-Cloze-Test-Dataset-Designed-by-Teachers](https://github.com/zhaowei8188127/Large-scale-Cloze-Test-Dataset-Designed-by-Teachers) —
   a GitHub mirror of CLOTH (Xie et al., 2018), 7,131 real cloze-test passages
   from Chinese middle/high school English exams, written by teachers
   specifically to test grammar, vocabulary, and reasoning.
 - **License:** MIT (per the mirror repo) — free to use, including commercially.
-- **How it's used:** one blank sampled per passage (350 sampled, all
-  survived dedup). Each blank's correct-answer word is classified into
-  Grammar (function-word POS tags: ADP/CCONJ/SCONJ/DET/PRON/AUX/PART, via
-  spaCy) vs. Vocabulary (content words) vs. Writing (a small curated list of
-  discourse connectives like "however", "therefore", "in addition") — this
-  is a heuristic, not a ground-truth label, and it shows: Writing only
-  caught 4 questions since discourse connectives are rare as cloze answers.
-  If Writing coverage matters, consider a different heuristic or a
-  dedicated source.
+- **How it's used:** one blank sampled per passage (2,000 sampled, up from
+  350 — still under a third of the 7,131 available passages). Each blank's
+  correct-answer word is classified into Grammar (function-word POS tags,
+  via spaCy) vs. Vocabulary (content words) vs. Writing (a curated list of
+  discourse connectives, widened in the second pass to include sequencing
+  words like "first"/"next"/"finally").
+- **Per-topic counts:** Vocabulary 1,794 (now the dominant English topic —
+  a new imbalance in the OTHER direction, worth watching), Grammar 187,
+  Writing 32, Reading Comprehension 500 (from RACE-C above).
 
-### Known imbalances to revisit before final training
-- Chemistry: Organic (7) vs. Inorganic (208) — keyword list too narrow for Organic.
-- Mathematics: Calculus (4) — AQuA is algebra-word-problem-heavy; barely any
-  calculus content exists in the source to keyword-match.
-- Physics: Modern Physics (8) — same issue, source skews toward Mechanics.
-- English: Writing (4) — heuristic-classified from CLOTH, discourse
-  connectives are rare among cloze answers.
-- None of these are bugs — they're the real shape of the sourced data
-  reported honestly. Widening keyword lists will over-classify (false
-  positives); a dedicated source per thin topic is the more defensible fix
-  before the thesis defense if asked about these gaps.
+### Remaining genuinely thin topics
+Two passes of real sourcing (initial + wider sampling/keywords) converged
+on the same three topics staying thin no matter how hard the existing
+sources are mined:
+- **Mathematics: Calculus (6)** — AQuA has almost no calculus word problems.
+- **Physics: Modern Physics (8)** — grade-school ARC-derived source has
+  almost no nuclear/particle physics content.
+- **Chemistry: Organic (17)** — same source, thin on organic chemistry.
+
+These are structural gaps in the sourced datasets, not sampling or keyword
+issues — confirmed by widening both and seeing counts barely move. Closing
+them requires a dedicated source per topic (e.g. an AP Calculus or AP
+Chemistry MCQ set), which is a reasonable next step if these three specific
+topics matter for the final model, but isn't a quick fix like the other
+seven were.
 
 ## M1 remaining considerations
 
