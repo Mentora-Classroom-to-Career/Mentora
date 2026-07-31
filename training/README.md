@@ -168,6 +168,41 @@ previously-zero topics learning something real, with Calculus/Modern
 Physics/Organic remaining the honest exception until a dedicated source
 is added for those three specifically.
 
+**Third real run — new failure mode (collapse, not underfitting):**
+`eval_f1_micro` bounced between 0.34-0.44 across 5 epochs (early stopping
+triggered correctly), which looked like progress until the per-topic
+breakdown showed the real picture: only Algebra (recall 1.00, precision
+0.40) and Vocabulary (recall 1.00, precision 0.26) were EVER predicted —
+every other topic scored recall 0.00. The smoking gun: max predicted
+probability was **exactly 0.557 for every single validation example**,
+meaning the model had stopped reading input entirely and converged to a
+constant output matching the label marginals (Algebra is ~39% of the
+dataset, Vocabulary ~26% — almost exactly matching those precision
+values).
+
+**Root cause, confirmed by the math, not guesswork:** the flat
+`pos_weight` cap (20.0, calibrated when the dataset was smaller and less
+imbalanced) only penalizes MISSING a rare class's true positives — it
+does nothing about false positives. At 6,942 questions, Calculus's true
+imbalance is ~1,156:1, but capping the penalty at 20x discounts it so far
+below the true ratio that "always predict negative on Calculus" becomes
+the mathematically loss-minimal strategy, not a training accident. The
+same capped value applied identically to 11 of 16 topics, while
+Algebra/Vocabulary (barely imbalanced) were left almost unweighted — so
+"always predict the two biggest topics, ignore the other 14" was the
+model's actual global optimum under that weighting scheme.
+
+**Fix:** switched from raw inverse-frequency (flat-capped) to
+square-root-dampened inverse frequency, verified against the real dataset
+before shipping: Calculus's ~1,156:1 ratio dampens to ~34, Mechanics's
+~52:1 dampens to ~7.2 — real differentiation instead of both flattening
+to the same capped value. Raised the cap to 50 (a safety ceiling only;
+the highest real computed value is 34, so it shouldn't bind). Also
+switched `warmup_ratio` (deprecated in this transformers version, but
+confirmed still functional) to the equivalent `warmup_steps=0.1` float
+form, and raised the epoch ceiling 15->25 since 5 epochs took ~7.5
+minutes on a T4 — compute was never the constraint.
+
 ## Running the rest (M4, M5, M2 — and re-running M1 with the fixes above)
 
 1. Upload `datasets/` (the repo folder) to Google Drive at
