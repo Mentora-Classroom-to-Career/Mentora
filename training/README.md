@@ -209,6 +209,39 @@ confirmed still functional) to the equivalent `warmup_steps=0.1` float
 form, and raised the epoch ceiling 15->25 since 5 epochs took ~7.5
 minutes on a T4 — compute was never the constraint.
 
+**Fourth real run — success, no collapse (commit 37d4382's notebook):**
+`eval_f1_micro = 0.731` at epoch 1 (the best; early stopping correctly
+reverted from a declining epoch 2-4). Max predicted probability varied
+genuinely per example (0.928-0.993 range, not a flat constant) — the
+sqrt-dampened `pos_weight` fix worked. Per-topic breakdown showed real
+learning: Vocabulary F1=0.93, Algebra F1=0.87, Reading Comprehension
+F1=0.81, Statistics F1=0.60, Mechanics F1=0.38, Inorganic F1=0.37,
+Waves & Optics F1=0.10 (up from 0.0).
+
+**Remaining gap, honestly split into two different problems:**
+- **Genuinely data-starved (fix = more data):** Calculus (6 examples),
+  Modern Physics (8), Organic (17), Physical Chemistry (23) — all still
+  F1=0.0, all still under 25 total examples. Expected; documented in
+  SOURCES.md as structural gaps in the sourced datasets.
+- **NOT data-starved, still F1=0.0 (fix = threshold tuning, not more
+  data):** Geometry (264 examples!), Grammar (187), Trigonometry (63),
+  Writing (32), Electricity & Magnetism (49) all scored exactly 0.0
+  despite real support. Since `load_best_model_at_end` restored epoch 1
+  (best OVERALL micro-F1) before these specific classes' predicted
+  probabilities crossed the global 0.5 cutoff, and the global threshold
+  sweep can't reveal this (lowering it to help these classes also floods
+  Algebra/Vocabulary with false positives, masking the trade-off in the
+  aggregate metric) — added a new §7 per-class threshold search that
+  finds each class's own best cutoff independently. Verified the search
+  logic against synthetic data before shipping (correctly recovered a
+  planted signal: F1 0.0 at the global threshold -> F1 1.0 at the
+  class's own optimal threshold).
+
+Next run's §7 output should show whether the medium-support topics above
+are "ranking correctly but need a lower threshold" (real progress,
+usable today with per-class thresholds) or "not learned yet" (would need
+more epochs or more data after all).
+
 ## Running the rest (M4, M5, M2 — and re-running M1 with the fixes above)
 
 1. Upload `datasets/` (the repo folder) to Google Drive at
