@@ -695,7 +695,15 @@ def build_m2():
            "derived automatically from M1's real question bank. This should be "
            "a real training run now, not just a pipeline smoke test."),
         *SHARED_SETUP,
-        pip_cell(),
+        pip_cell(extra=" 'torchao>=0.16.0'"),
+        md("**Why the `torchao` pin above:** a real run hit "
+           "`ImportError: Found an incompatible version of torchao. Found version "
+           "0.10.0, but only versions above 0.16.0 are supported` on "
+           "`get_peft_model(...)` below. Colab's pre-installed `torchao` (0.10.0) "
+           "is older than what the current `peft` release requires — a Colab base-"
+           "image version-drift issue, not something wrong with this notebook or "
+           "your setup. The pip install above force-upgrades it before `peft` is "
+           "imported."),
         WANDB_CELL_MD, WANDB_CELL_CODE,
         md("## 1. Load base model + apply LoRA"),
         code(
