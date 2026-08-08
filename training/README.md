@@ -242,6 +242,34 @@ are "ranking correctly but need a lower threshold" (real progress,
 usable today with per-class thresholds) or "not learned yet" (would need
 more epochs or more data after all).
 
+## M2 result — real run in Colab, real NaN bug found and fixed
+
+**Bug 1 (fixed):** `ImportError: Found an incompatible version of torchao.
+Found version 0.10.0, but only versions above 0.16.0 are supported` on
+`get_peft_model(...)` — Colab's pre-installed `torchao` is older than what
+the current `peft` release requires (a Colab base-image version-drift
+issue). Fixed by pinning `torchao>=0.16.0` in the pip install cell.
+
+**Bug 2 (fixed):** with that resolved, training ran for real (3 epochs,
+~48 min on a T4) but showed the textbook T5-fp16 failure: `eval_loss: nan`
+from the very first eval (step 200), training loss collapsing to
+`0.000000`, `BLEU4=0.024` / `ROUGEL=0.148` stuck near their random-init
+floor for the entire run. Verified via multiple HuggingFace GitHub
+issues and forum threads: this is a well-documented, still-unresolved
+issue specific to **T5-Large and up** — `t5-small`/`t5-base` train fine in
+fp16, but `t5-large` and `flan-t5-xl` reliably produce inf/NaN in their
+feed-forward and attention layers under fp16's limited dynamic range.
+FLAN-T5-**Large** (our model) is exactly the affected size. Fixed by
+setting `fp16=False` — a T4 (Turing architecture) has no real bf16 tensor
+cores either, so fp32 is the safer choice, same conclusion as M1's
+DeBERTa fix for an unrelated reason. Also added the same checkpoint-
+validity guard used for M1, since this run's checkpoints (from step 200
+onward) are all NaN-corrupted and a naive resume would continue that.
+
+**Before re-running:** clear `mentora_models/model2_question_generator/`
+on Drive — every checkpoint from the NaN run is corrupted, not just
+incomplete.
+
 ## Running the rest (M4, M5, M2 — and re-running M1 with the fixes above)
 
 1. Upload `datasets/` (the repo folder) to Google Drive at
