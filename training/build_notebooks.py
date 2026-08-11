@@ -463,8 +463,13 @@ def build_m1():
             "    print(f'Resuming from {resume} -- if this is from a run with DIFFERENT hyperparameters, stop and clear OUT_DIR instead (see cell above).')\n\n"
             "try:\n"
             "    trainer.train(resume_from_checkpoint=resume)\n"
-            "except ValueError as e:\n"
-            "    print(f'Resume failed ({e}) -- falling back to a fresh run from scratch.')\n"
+            "except (ValueError, AttributeError, RuntimeError, KeyError) as e:\n"
+            "    # Broadened from ValueError-only after a real run hit AttributeError here:\n"
+            "    # resuming from a checkpoint saved under DIFFERENT training args (e.g. fp16\n"
+            "    # True->False) can fail in several ways depending on WHICH saved state is\n"
+            "    # incompatible (optimizer, scheduler, AMP scaler, ...) -- all of them mean the\n"
+            "    # same thing: this checkpoint doesn't match the current config, start fresh.\n"
+            "    print(f'Resume failed ({type(e).__name__}: {e}) -- falling back to a fresh run from scratch.')\n"
             "    trainer.train(resume_from_checkpoint=None)"
         ),
         md("## 4. Save final model"),
@@ -809,8 +814,14 @@ def build_m2():
             "    print(f'Resuming from {resume} -- if this is from a run that hit NaN loss, clear OUT_DIR instead.')\n\n"
             "try:\n"
             "    trainer.train(resume_from_checkpoint=resume)\n"
-            "except ValueError as e:\n"
-            "    print(f'Resume failed ({e}) -- falling back to a fresh run from scratch.')\n"
+            "except (ValueError, AttributeError, RuntimeError, KeyError) as e:\n"
+            "    # Broadened from ValueError-only after a real run hit exactly this: resuming\n"
+            "    # from a checkpoint saved under fp16=True while now running fp16=False raised\n"
+            "    # AttributeError ('NoneType' object has no attribute 'load_state_dict') trying\n"
+            "    # to load a saved AMP scaler state that no longer applies. Any of these\n"
+            "    # exception types from a resume attempt means the same thing: this checkpoint\n"
+            "    # doesn't match the current config, start fresh instead of crashing.\n"
+            "    print(f'Resume failed ({type(e).__name__}: {e}) -- falling back to a fresh run from scratch.')\n"
             "    trainer.train(resume_from_checkpoint=None)"
         ),
         md("## 5. Save — LoRA adapter only"),
