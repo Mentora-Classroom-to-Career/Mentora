@@ -266,9 +266,28 @@ DeBERTa fix for an unrelated reason. Also added the same checkpoint-
 validity guard used for M1, since this run's checkpoints (from step 200
 onward) are all NaN-corrupted and a naive resume would continue that.
 
-**Before re-running:** clear `mentora_models/model2_question_generator/`
-on Drive — every checkpoint from the NaN run is corrupted, not just
-incomplete.
+**Bug 3 (fixed):** re-running without manually clearing Drive resumed from
+the NaN run's checkpoint (saved under `fp16=True`), crashing with
+`AttributeError: 'NoneType' object has no attribute 'load_state_dict'`
+trying to load an incompatible AMP scaler state. The resume fallback only
+caught `ValueError`, so this crashed instead of self-healing. Broadened to
+catch `(ValueError, AttributeError, RuntimeError, KeyError)` — the exact
+class of fix worth having regardless of which specific saved component
+(optimizer, scheduler, scaler, ...) is incompatible with a changed config.
+
+**Real result after the self-healing fallback worked correctly:** training
+completed cleanly for 3 epochs (no NaN this time), but landed at
+`BLEU4=0.035` / `ROUGEL=0.171` — both far under target. Crucially,
+validation loss was **still decreasing** at the final step (0.601 -> 0.599)
+and BLEU/ROUGE were still climbing — this is an unconverged model, not a
+broken one. `num_train_epochs` (3, unchanged from the original Phase 4
+spec) was simply too few for a from-scratch LoRA fine-tune on 6,942
+examples. Fixed: raised to 15 with `EarlyStoppingCallback(patience=3)`
+deciding when to actually stop, same approach as M1. Also added a §6
+qualitative-check cell that prints real generated outputs and checks
+valid-JSON rate — BLEU/ROUGE alone can't distinguish "hasn't learned the
+JSON structure yet" from "structure is fine, wording needs polish," and
+those need different fixes.
 
 ## Running the rest (M4, M5, M2 — and re-running M1 with the fixes above)
 
